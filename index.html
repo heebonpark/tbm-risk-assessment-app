@@ -267,7 +267,23 @@
 <div id="app"></div>
 <div id="toast" class="toast"></div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDxvT2do2sueEQ6XeBHxLc2O0136S5oQPk",
+  authDomain: "tbm-risk-app.firebaseapp.com",
+  projectId: "tbm-risk-app",
+  storageBucket: "tbm-risk-app.firebasestorage.app",
+  messagingSenderId: "14610240093",
+  appId: "1:14610240093:web:75de26c48b56b72fab73b4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 /* ============================================================
    작업 전 TBM 및 위험성평가표 — 단일 파일 배포용 웹앱
    ============================================================ */
@@ -311,27 +327,34 @@ const RISK_TABLE = [
 
 /* ---------------- storage helpers ---------------- */
 async function sGet(key, shared){
-  try{ return localStorage.getItem(key); }
-  catch(e){ return null; }
+  try{ 
+    const docSnap = await getDoc(doc(db, "tbm_data", key));
+    if (docSnap.exists()) return docSnap.data().value;
+    return null;
+  } catch(e){ return null; }
 }
 async function sSet(key, value, shared){
-  try{ localStorage.setItem(key, value); return true; }
-  catch(e){ console.error("storage set failed", e); return null; }
+  try{ 
+    await setDoc(doc(db, "tbm_data", key), { value: value });
+    return true; 
+  } catch(e){ console.error("storage set failed", e); return null; }
 }
 async function sList(prefix, shared){
   try{ 
     const keys = [];
-    for(let i=0; i<localStorage.length; i++){
-      const k = localStorage.key(i);
-      if(k && k.startsWith(prefix)) keys.push(k);
-    }
+    const qSnap = await getDocs(collection(db, "tbm_data"));
+    qSnap.forEach(docSnap => {
+      if(docSnap.id.startsWith(prefix)) keys.push(docSnap.id);
+    });
     return keys;
   }
   catch(e){ return []; }
 }
 async function sDelete(key, shared){
-  try{ localStorage.removeItem(key); return true; }
-  catch(e){ return null; }
+  try{ 
+    await deleteDoc(doc(db, "tbm_data", key));
+    return true; 
+  } catch(e){ return null; }
 }
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
