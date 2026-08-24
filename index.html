@@ -784,6 +784,7 @@ function sheetOuterHTML(f, dis, participantsInner){
     </table>
 
     <span class="section-label">TBM 확인 사항 (공통사항)</span>
+    ${!dis ? `<button type="button" data-tbm-all style="border:1px solid var(--line-soft); background:#fff; color:var(--brand-deep); font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin-left:6px; cursor:pointer; vertical-align:bottom; margin-bottom:2px;">전체 선택</button>` : ''}
     <div class="checkbox-panel">
       <div class="ck-grid2">
         ${TBM_COMMON.map(x=>`
@@ -804,7 +805,13 @@ function sheetOuterHTML(f, dis, participantsInner){
     </table>
 
     <table class="risk">
-      <tr><th style="width:76px;">위험요인</th><th>안전대책</th><th style="width:126px;">확인</th><th style="width:190px;">추가 조치 사항 (불량 시 작성)</th></tr>
+      <tr><th style="width:76px;">위험요인</th><th>안전대책</th><th style="width:126px;">
+        확인
+        ${!dis ? `<div style="margin-top:4px; display:flex; gap:4px; justify-content:center; font-weight:normal;">
+          <button type="button" data-all-good style="border:1px solid var(--line-soft); background:#fff; color:var(--brand-deep); font-size:10px; font-weight:700; padding:2px 4px; border-radius:4px; cursor:pointer;">전체 양호</button>
+          <button type="button" data-all-na style="border:1px solid var(--line-soft); background:#fff; color:var(--brand-deep); font-size:10px; font-weight:700; padding:2px 4px; border-radius:4px; cursor:pointer;">전체 해당없음</button>
+        </div>` : ''}
+      </th><th style="width:190px;">추가 조치 사항 (불량 시 작성)</th></tr>
       ${f.risks.map((r,i)=>`
         <tr>
           ${r._firstOfCat !== false && isFirstOfCat(f.risks,i) ? `<td class="cat ${r.cls}" rowspan="${catCount(f.risks,r.cat)}">${esc(r.cat)}</td>` : ``}
@@ -885,6 +892,12 @@ function bindGridInputs(el, f, readOnly, autosave){
   el.querySelectorAll('[data-tbm]').forEach(node=>{
     node.addEventListener('change', ()=>{ f.tbm[node.getAttribute('data-tbm')] = node.checked; touch(); });
   });
+  const btnTbmAll = el.querySelector('[data-tbm-all]');
+  if(btnTbmAll) btnTbmAll.addEventListener('click', ()=>{
+    Object.keys(f.tbm).forEach(k => f.tbm[k] = true);
+    renderSheet(el, f, readOnly, autosave);
+    touch();
+  });
   el.querySelectorAll('[data-ladder]').forEach(node=>{
     node.addEventListener('change', ()=>{
       const k = node.getAttribute('data-ladder');
@@ -908,6 +921,18 @@ function bindGridInputs(el, f, readOnly, autosave){
       f.risks[i].status = node.value;
       touch();
     });
+  });
+  const btnAllGood = el.querySelector('[data-all-good]');
+  if(btnAllGood) btnAllGood.addEventListener('click', ()=>{
+    f.risks.forEach(r => r.status = 'good');
+    renderSheet(el, f, readOnly, autosave);
+    touch();
+  });
+  const btnAllNa = el.querySelector('[data-all-na]');
+  if(btnAllNa) btnAllNa.addEventListener('click', ()=>{
+    f.risks.forEach(r => r.status = 'na');
+    renderSheet(el, f, readOnly, autosave);
+    touch();
   });
   el.querySelectorAll('[data-risk-action]').forEach(node=>{
     node.addEventListener('input', ()=>{
