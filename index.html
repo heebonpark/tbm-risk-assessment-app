@@ -237,15 +237,36 @@
   #print-all-root .print-page:last-child{page-break-after:auto;}
 
   @media print{
-    body{background:#fff;}
-    .no-print{display:none !important;}
-    main{padding:0;}
-    .shell{max-width:none;}
-    .sheet{box-shadow:none;border:none;border-radius:0;padding:6mm 8mm;}
-    table.risk td.action input{border-bottom:1px solid #999;}
-    @page{size:A4 portrait;margin:8mm;}
-    body.printing-all #app{display:none !important;}
-    body.printing-all #print-all-root{display:block !important;}
+    body { 
+      background: #fff; 
+      -webkit-print-color-adjust: exact !important; 
+      print-color-adjust: exact !important; 
+    }
+    .no-print { display: none !important; }
+    main { padding: 0; display: block; }
+    .shell { max-width: none; }
+    .sheet { box-shadow: none; border: none; border-radius: 0; padding: 0; }
+    
+    /* 텍스트 입력 칸이 잘리지 않도록 처리 */
+    input[type=text], textarea { 
+      border: none !important; 
+      background: transparent !important; 
+      overflow: visible !important; 
+    }
+    table.risk td.action input { border-bottom: 1px dashed #999 !important; }
+    
+    /* 표가 페이지 중간에 잘리는 현상(Page break) 방지 */
+    table { page-break-inside: auto; }
+    tr, td, th, .section-label, .checkbox-panel { page-break-inside: avoid; }
+    
+    /* 인쇄 시 테두리와 배경색 강제 적용 */
+    table.grid th, table.grid td,
+    table.ladder th, table.ladder td,
+    table.risk th, table.risk td { border: 1px solid #333 !important; }
+    
+    @page { size: A4 portrait; margin: 12mm 10mm; }
+    body.printing-all #app { display: none !important; }
+    body.printing-all #print-all-root { display: block !important; }
   }
   @media (max-width:720px){
     table.risk td.action, table.risk th:nth-child(4){display:none;}
