@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>작업 전 TBM 및 위험성평가표</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root{
+    --ink:#1b2a2e;
+    --ink-soft:#4d5d5f;
+    --paper:#eef1ef;
+    --surface:#ffffff;
+    --line:#c7d1cf;
+    --line-soft:#dfe6e4;
+    --brand:#0d4f5c;
+    --brand-deep:#0a3b45;
+    --amber:#d98c1f;
+    --red:#b0392b;
+    --green:#2f7d5f;
+    --violet:#6a4c93;
+    --steel:#3a6ea5;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(15,30,32,.06), 0 8px 24px rgba(15,30,32,.07);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans KR',sans-serif;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, rgba(13,79,92,.06), transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+  ::selection{background:rgba(13,79,92,.18);}
+
+  /* ---------- App shell ---------- */
+  #app{min-height:100vh;display:flex;flex-direction:column;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 14px;
+    padding:14px 22px;background:var(--brand-deep);color:#eef4f2;
+    box-shadow:var(--shadow);
+  }
+  .topbar .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px;}
+  .topbar .brand .dot{width:10px;height:10px;border-radius:2px;background:var(--amber);flex:none;}
+  .topbar .brand .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a9c2bd;font-weight:500;margin-left:6px;}
+  .topbar .who{display:flex;align-items:center;gap:12px;font-size:13px;color:#cfe3df;white-space:nowrap;}
+  .topbar button.link{
+    background:transparent;border:1px solid rgba(255,255,255,.28);color:#eef4f2;
+    padding:6px 12px;border-radius:7px;font-size:12.5px;font-weight:500;
+  }
+  .topbar button.link:hover{background:rgba(255,255,255,.1);}
+
+  main{flex:1;display:flex;justify-content:center;padding:26px 16px 60px;}
+  .shell{width:100%;max-width:1040px;}
+
+  /* ---------- Login ---------- */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .login-card{
+    width:100%;max-width:460px;background:var(--surface);border-radius:16px;
+    box-shadow:var(--shadow);border:1px solid var(--line-soft);overflow:hidden;
+  }
+  .login-head{
+    background:linear-gradient(135deg,var(--brand-deep),var(--brand));
+    color:#eef4f2;padding:28px 28px 22px;
+  }
+  .login-head .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#a9c2bd;text-transform:uppercase;}
+  .login-head h1{margin:6px 0 4px;font-size:21px;font-weight:900;line-height:1.35;}
+  .login-head p{margin:0;font-size:12.5px;color:#bcd6d1;}
+  .tabs{display:flex;border-bottom:1px solid var(--line-soft);}
+  .tab{flex:1;text-align:center;padding:13px 8px;font-size:13.5px;font-weight:700;color:var(--ink-soft);background:#f6f8f7;border:none;border-bottom:3px solid transparent;}
+  .tab.active{color:var(--brand-deep);background:var(--surface);border-bottom-color:var(--amber);}
+  .login-body{padding:24px 26px 28px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;}
+  .field select, .field input[type=text], .field input[type=password], .field input[type=date]{
+    width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:14px;color:var(--ink);background:#fff;
+  }
+  .field select:focus,.field input:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,79,92,.12);}
+  .addrow{display:flex;gap:8px;}
+  .addrow input{flex:1;}
+  .addrow button{padding:0 12px;border-radius:8px;border:1.5px solid var(--line);background:#f6f8f7;font-size:12px;font-weight:700;color:var(--brand-deep);}
+  .btn-primary{
+    width:100%;padding:12px;border:none;border-radius:9px;background:var(--brand-deep);color:#fff;
+    font-weight:700;font-size:14.5px;margin-top:6px;transition:background .15s;
+  }
+  .btn-primary:hover{background:var(--brand);}
+  .btn-primary:disabled{background:#aab6b4;cursor:not-allowed;}
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.6;}
+  .err{color:var(--red);font-size:12.5px;font-weight:600;margin-top:8px;}
+
+  /* ---------- Buttons general ---------- */
+  .btn{padding:9px 16px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:13px;font-weight:700;}
+  .btn:hover{border-color:var(--brand);color:var(--brand-deep);}
+  .btn.solid{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff;}
+  .btn.solid:hover{background:var(--brand);}
+  .btn.danger{color:var(--red);border-color:#e6c3bd;}
+  .btn.danger:hover{background:#fdf1ef;border-color:var(--red);}
+  .btn.amber{background:var(--amber);border-color:var(--amber);color:#3a2a05;}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--ink-soft);}
+
+  /* ---------- Registrar form tabs ---------- */
+  .formtabs{display:flex;gap:6px;margin-bottom:14px;}
+  .ftab{padding:9px 16px;border-radius:8px 8px 0 0;border:1.5px solid var(--line-soft);border-bottom:none;background:#e7edec;color:var(--ink-soft);font-size:13px;font-weight:700;}
+  .ftab.active{background:var(--surface);color:var(--brand-deep);border-color:var(--line-soft);box-shadow:0 -2px 0 var(--amber) inset;}
+
+  table.grid th.req::after{content:" *";color:var(--red);font-weight:900;}
+
+  /* ---------- Action bar ---------- */
+  .actionbar{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .actionbar .title{font-size:15px;font-weight:900;color:var(--brand-deep);}
+  .actionbar .title .mono{font-size:11.5px;color:var(--ink-soft);font-weight:500;display:block;margin-top:2px;}
+  .actionbar .btns{display:flex;gap:8px;flex-wrap:wrap;}
+
+  /* ---------- The form sheet (A4-styled) ---------- */
+  .sheet{
+    background:var(--surface);border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--line-soft);
+    padding:26px 30px 30px;
+  }
+  .sheet h2.formtitle{
+    text-align:center;font-size:20px;font-weight:900;letter-spacing:.5px;color:var(--brand-deep);
+    margin:2px 0 4px;
+  }
+  .sheet .formtitle-sub{text-align:center;font-size:11px;color:var(--ink-soft);margin-bottom:16px;font-family:'IBM Plex Mono',monospace;}
+
+  table.grid{width:100%;border-collapse:collapse;margin-bottom:14px;table-layout:fixed;}
+  table.grid th, table.grid td{border:1px solid var(--line);padding:7px 9px;font-size:12.5px;vertical-align:middle;overflow:hidden;}
+  table.grid th{background:#f3f6f5;color:var(--brand-deep);font-weight:700;text-align:left;white-space:nowrap;}
+  table.grid td input[type=text], table.grid td input[type=date]{
+    width:100%;border:none;background:transparent;font-size:13px;padding:3px 2px;color:var(--ink);
+  }
+  table.grid td input:focus{outline:none;background:#f6faf9;border-radius:4px;}
+
+  .section-label{
+    font-size:12.5px;font-weight:900;color:#fff;background:var(--brand-deep);
+    padding:6px 10px;border-radius:6px 6px 0 0;display:inline-block;margin-bottom:0;
+  }
+  .checkbox-panel{border:1px solid var(--line);border-top:none;border-radius:0 6px 6px 6px;padding:10px 12px;margin-bottom:14px;background:#fafcfb;}
+  .ck-row{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:12.8px;line-height:1.5;}
+  .ck-row input{margin-top:3px;accent-color:var(--brand-deep);width:15px;height:15px;flex:none;}
+  .ck-grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;}
+
+  table.ladder{width:100%;border-collapse:collapse;margin-bottom:14px;}
+  table.ladder th{background:var(--brand-deep);color:#fff;font-size:12px;font-weight:700;padding:7px 9px;text-align:left;}
+  table.ladder td{border:1px solid var(--line);padding:6px 9px;font-size:12.3px;vertical-align:top;}
+  table.ladder td.hcell{width:150px;font-weight:700;background:#f3f6f5;color:var(--brand-deep);}
+  table.ladder .ck-row{padding:2px 0;}
+
+  table.risk{width:100%;border-collapse:collapse;margin-bottom:14px;}
+  table.risk th{background:var(--brand-deep);color:#fff;font-size:11.8px;font-weight:700;padding:6px 8px;text-align:center;}
+  table.risk td{border:1px solid var(--line);padding:6px 8px;font-size:12.2px;vertical-align:middle;}
+  table.risk td.cat{width:76px;font-weight:900;text-align:center;color:#fff;font-size:11.5px;position:relative;}
+  table.risk td.item{line-height:1.45;}
+  table.risk td.status{width:126px;}
+  table.risk td.action{width:190px;}
+  .status-opts{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;}
+  .status-opt{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--ink-soft);}
+  .status-opt input{accent-color:var(--brand-deep);width:14px;height:14px;}
+  .status-opt.good{color:var(--green);}
+  .status-opt.bad{color:var(--red);}
+  table.risk td.action input{width:100%;border:none;background:transparent;font-size:12px;border-bottom:1px dashed var(--line);padding:2px 0;}
+  table.risk td.action input:focus{outline:none;border-bottom-color:var(--brand);}
+  .cat-fall{background:var(--amber);} .cat-pinch{background:var(--steel);} .cat-cut{background:var(--red);}
+  .cat-fire{background:#c1440e;} .cat-shock{background:var(--violet);} .cat-health{background:var(--green);}
+  .cat-extra{background:var(--ink-soft);}
+
+  textarea.wide{width:100%;min-height:52px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12.8px;resize:vertical;}
+  textarea.wide:focus{outline:none;border-color:var(--brand);}
+
+  .participants{border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px;}
+  .participants .prow{display:grid;grid-template-columns:1fr 210px 30px;border-top:1px solid var(--line);}
+  .participants .prow:first-child{border-top:none;}
+  .participants .pname, .participants .psig{padding:6px 8px;}
+  .participants .pname input{width:100%;border:none;font-size:12.8px;background:transparent;}
+  .participants .pname input:focus{outline:none;}
+  .participants label.mini{display:block;font-size:10px;color:var(--ink-soft);margin-bottom:2px;font-weight:700;}
+  canvas.sigpad{border:1px dashed var(--line);border-radius:4px;background:#fdfefe;touch-action:none;width:140px;height:44px;}
+  .sigcell{position:relative;display:flex;align-items:center;gap:10px;}
+  .sig-clear{border:none;background:transparent;color:var(--ink-soft);font-size:10px;text-decoration:underline;padding:0;white-space:nowrap;flex:none;}
+  .prow .rm{display:flex;align-items:center;justify-content:center;}
+  .prow .rm button{border:none;background:transparent;color:var(--red);font-size:15px;font-weight:900;}
+  .addp{padding:8px;text-align:center;}
+  .addp button{font-size:12px;}
+
+  .meta-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+
+  /* ---------- Admin ---------- */
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+  .stat{flex:1;min-width:140px;background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);}
+  .stat .n{font-size:24px;font-weight:900;color:var(--brand-deep);font-family:'IBM Plex Mono',monospace;}
+  .stat .l{font-size:11.5px;color:var(--ink-soft);font-weight:700;margin-top:2px;}
+  .panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;}
+  .panel h3{margin:0 0 12px;font-size:14px;font-weight:900;color:var(--brand-deep);display:flex;align-items:center;gap:8px;}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+  .filters input,.filters select{padding:8px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:12.8px;}
+  .filters input[type=text]{flex:1;min-width:160px;}
+  table.list{width:100%;border-collapse:collapse;}
+  table.list th{text-align:left;font-size:11.5px;color:var(--ink-soft);font-weight:700;padding:8px;border-bottom:2px solid var(--line);text-transform:uppercase;letter-spacing:.3px;}
+  table.list td{padding:9px 8px;font-size:13px;border-bottom:1px solid var(--line-soft);}
+  table.list tr:hover td{background:#f6faf9;}
+  table.list .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.8px;font-weight:700;}
+  .badge.ok{background:#e4f3ec;color:var(--green);}
+  .badge.bad{background:#fbe9e6;color:var(--red);}
+  .rowbtns{display:flex;gap:6px;}
+  .rowbtns button{padding:5px 10px;font-size:11.5px;}
+  .empty{text-align:center;padding:40px 10px;color:var(--ink-soft);font-size:13px;}
+  .taglist{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{display:flex;align-items:center;gap:6px;background:#f3f6f5;border:1px solid var(--line);border-radius:20px;padding:5px 6px 5px 12px;font-size:12px;font-weight:600;}
+  .tag button{border:none;background:transparent;color:var(--red);font-weight:900;font-size:13px;padding:0 4px;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(15,30,32,.5);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow:auto;z-index:50;}
+  .modal{background:var(--paper);border-radius:12px;max-width:900px;width:100%;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--brand-deep);color:#fff;border-radius:12px 12px 0 0;}
+  .modal-head button{background:transparent;border:none;color:#fff;font-size:18px;font-weight:700;}
+  .modal-body{padding:20px;}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--brand-deep);color:#fff;padding:11px 20px;border-radius:9px;font-size:13px;font-weight:600;box-shadow:var(--shadow);z-index:100;opacity:0;transition:opacity .25s, transform .25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+
+  footer.appfoot{text-align:center;padding:16px;font-size:11px;color:var(--ink-soft);}
+
+  /* ---------- Print ---------- */
+  /* ---------- Print-all (admin bulk print) ---------- */
+  #print-all-root{display:none;}
+  #print-all-root .print-page{page-break-after:always;margin-bottom:24px;}
+  #print-all-root .print-page:last-child{page-break-after:auto;}
+
+  @media print{
+    body{background:#fff;}
+    .no-print{display:none !important;}
+    main{padding:0;}
+    .shell{max-width:none;}
+    .sheet{box-shadow:none;border:none;border-radius:0;padding:6mm 8mm;}
+    table.risk td.action input{border-bottom:1px solid #999;}
+    @page{size:A4 portrait;margin:8mm;}
+    body.printing-all #app{display:none !important;}
+    body.printing-all #print-all-root{display:block !important;}
+  }
+  @media (max-width:720px){
+    table.risk td.action, table.risk th:nth-child(4){display:none;}
+    .participants .prow{grid-template-columns:1fr 130px 26px;}
+
+    /* stack the top info table into label/value cards instead of a cramped 6-col grid */
+    table.grid colgroup{display:none;}
+    table.grid, table.grid tr, table.grid th, table.grid td{display:block;width:100% !important;}
+    table.grid{table-layout:auto;}
+    table.grid tr{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;overflow:hidden;}
+    table.grid th{border:none;background:#f3f6f5;padding:7px 10px 2px;font-size:11px;white-space:normal;overflow:visible;margin-top:6px;}
+    table.grid th:first-child{margin-top:0;}
+    table.grid td{border:none;padding:2px 10px 9px;overflow:visible;}
+    table.grid td input, table.grid td select{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ============================================================
+   작업 전 TBM 및 위험성평가표 — 단일 파일 배포용 웹앱
+   ============================================================ */
+
+const BRANCHES = ["중앙","강북","서대문","고양","의정부","남양주","강릉","원주"];
+const ADMIN_PASSWORD = "0303";
+
+const TBM_COMMON = [
+  {k:"ppe", label:"개인보호구 착용 및 주변 동료 보호구 착용 상태 확인"},
+  {k:"health", label:"팀원 건강상태 / 컨디션 확인"},
+  {k:"tool", label:"공도구 사용 전 점검"},
+  {k:"facility", label:"안전 시설물 사용 전 점검(사다리/안전난간 등)"},
+  {k:"fallobj", label:"낙하물 방지 조치(상하작업 금지 및 수공구 낙하방지 확인)"},
+];
+
+const LADDER_LEVELS = [
+  {k:"basic", label:"기본 사항(높이 무관)", measure:"전도방지 조치 중 1개 이상 시행(아웃트리거/2인1조/견고한 시설물에 고정)"},
+  {k:"m1", label:"1m 초과", measure:"최상단 및 아래 발판 사용 금지"},
+  {k:"m2", label:"2m 이상", measure:"안전대 착용 및 견고한 구조물에 안전고리 체결\\n(안전고리 체결 시설 부재/부착시설 설치 불가 시 2인1조 필수)"},
+  {k:"m35", label:"3.5m 초과", measure:"작업 발판으로 사용 금지(고소차 등 사용)"},
+];
+
+const RISK_TABLE = [
+  {cat:"추락/전도", cls:"cat-fall", items:[
+    "발판 높이 2m 이상 고소작업 시 안전대 착용 및 견고한 곳에 안전고리 체결",
+    "고소작업차(스카이차 등) 작업 전 지반 평탄화 및 아웃트리거를 최대 인출",
+    "지붕 작업 시 스카이차를 우선 사용, 불가피하게 등반 시 수평생명줄을 설치",
+    "불안전한 구조의 천장 진입을 금지하고, 천장 입선 작업은 2인1조로 진행",
+    "일자형 사다리 작업발판 사용 금지 및 통로로 설치 시 2인 1조 필수",
+  ]},
+  {cat:"부딪힘/끼임", cls:"cat-pinch", items:[
+    "고소차 운용 시 유도자 배치 또는 작업구역 통제로 충돌 예방조치 시행",
+    "엘리베이터 작업 시 승강기 안전관리자 입회하에 2인1조 작업",
+    "자동문 상판 고정 작업 시 견고한 지지대를 사용 및 장갑 착용",
+  ]},
+  {cat:"베임/맞음", cls:"cat-cut", items:["그라인더 사용 시 안전덮개 장착 및 보안경 착용"]},
+  {cat:"화재", cls:"cat-fire", items:["화기작업(불티 발생)시 가연물 이격(또는 불티방지포 설치) 및 소화기 비치"]},
+  {cat:"감전", cls:"cat-shock", items:["전원 작업 시 작업 전 분전기 OFF 확인 및 검전기 사용으로 누전여부 확인"]},
+  {cat:"보건", cls:"cat-health", items:["분진 발생 구간에서 방진마스크 등 적절한 보호구 착용"]},
+];
+
+/* ---------------- storage helpers ---------------- */
+async function sGet(key, shared){
+  try{ return localStorage.getItem(key); }
+  catch(e){ return null; }
+}
+async function sSet(key, value, shared){
+  try{ localStorage.setItem(key, value); return true; }
+  catch(e){ console.error("storage set failed", e); return null; }
+}
+async function sList(prefix, shared){
+  try{ 
+    const keys = [];
+    for(let i=0; i<localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(prefix)) keys.push(k);
+    }
+    return keys;
+  }
+  catch(e){ return []; }
+}
+async function sDelete(key, shared){
+  try{ localStorage.removeItem(key); return true; }
+  catch(e){ return null; }
+}
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
+function esc(s){ return (s||"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------------- app state ---------------- */
+const state = {
+  view: "login",           // login | form | admin | detail
+  role: null,              // registrar | admin
+  registrar: null,         // {company, team, writerName}
+  companies: [],
+  teams: [],
+  editingRecordId: null,   // when set, form edits/overwrites an existing saved record
+  currentForm: null,
+  records: [],
+  adminFilter: { q:"", branch:"", from:"", to:"" },
+  formTab: "new",          // new | mine   (registrar-facing tab)
+  draftDirty: false,
+};
+
+function blankForm(prefill){
+  const risks = [];
+  RISK_TABLE.forEach(group=>{
+    group.items.forEach(item=>{
+      risks.push({cat:group.cat, cls:group.cls, item, status:"", action:""});
+    });
+  });
+  return {
+    id: uid(),
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
+    company: (prefill && prefill.company) || "",
+    team: (prefill && prefill.team) || "",
+    writerName: (prefill && prefill.writerName) || "",
+    branch: "",
+    workDate: todayStr(),
+    workName: "",
+    address: "",
+    workContent: "",
+    workType: "",
+    tbm: Object.fromEntries(TBM_COMMON.map(x=>[x.k,false])),
+    ladder: Object.fromEntries(LADDER_LEVELS.map(x=>[x.k,false])),
+    risks,
+    extraRisk: "",
+    participants: [{name:"", sig:""},{name:"", sig:""},{name:"", sig:""},{name:"", sig:""},{name:"", sig:""},{name:"", sig:""}],
+    remarks: "",
+  };
+}
+
+function draftKey(reg){ return `draft:${reg.company}::${reg.team}`; }
+
+async function saveDraft(){
+  if(!state.registrar || state.role !== 'registrar' || state.formTab !== 'new' || state.editingRecordId) return;
+  const key = draftKey(state.registrar);
+  await sSet(key, JSON.stringify(state.currentForm), false);
+}
+async function loadDraft(reg){
+  const raw = await sGet(draftKey(reg), false);
+  return raw ? JSON.parse(raw) : null;
+}
+async function clearDraft(reg){
+  try{ await window.storage.delete(draftKey(reg), false); }catch(e){}
+}
+const debouncedSaveDraft = debounce(saveDraft, 700);
+function debounce(fn, ms){
+  let t;
+  return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); };
+}
+
+/* ---------------- boot ---------------- */
+async function boot(){
+  const [c, t] = await Promise.all([
+    sGet("meta:companies", true),
+    sGet("meta:teams", true),
+  ]);
+  state.companies = c ? JSON.parse(c) : [];
+  state.teams = t ? JSON.parse(t) : [];
+  render();
+}
+
+async function loadRecords(){
+  const keys = await sList("record:", true);
+  const items = await Promise.all(keys.map(k => sGet(k, true)));
+  state.records = items.filter(Boolean).map(v=>JSON.parse(v)).sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
+}
+
+async function saveCompaniesTeams(){
+  await sSet("meta:companies", JSON.stringify(state.companies), true);
+  await sSet("meta:teams", JSON.stringify(state.teams), true);
+}
+
+/* ============================================================
+   RENDER: router
+   ============================================================ */
+function render(){
+  const app = document.getElementById('app');
+  if(state.view === "login"){ app.innerHTML = loginHTML(); bindLogin(); return; }
+  app.innerHTML = shellHTML();
+  bindShell();
+  if(state.view === "form") renderFormInto(document.getElementById('viewport'));
+  if(state.view === "admin") renderAdminInto(document.getElementById('viewport'));
+}
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+function loginHTML(){
+  return `
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-head">
+        <div class="eyebrow">KT Security &middot; 강북/강원사업지원팀</div>
+        <h1>작업 전 TBM 및<br>위험성평가표</h1>
+        <p>현장 착수 전, 팀별 위험성평가를 등록하고 관리합니다.</p>
+      </div>
+      <div class="tabs">
+        <button class="tab active" id="tab-reg" type="button">등록자 로그인</button>
+        <button class="tab" id="tab-admin" type="button">관리자 로그인</button>
+      </div>
+      <div class="login-body">
+        <div id="pane-reg">
+          <div class="field">
+            <label>협력사(공사업체)</label>
+            <select id="in-company"></select>
+            <div class="addrow" style="margin-top:6px;">
+              <input type="text" id="new-company" placeholder="목록에 없으면 새로 입력">
+              <button type="button" id="add-company">추가</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>공사팀</label>
+            <select id="in-team"></select>
+            <div class="addrow" style="margin-top:6px;">
+              <input type="text" id="new-team" placeholder="목록에 없으면 새로 입력">
+              <button type="button" id="add-team">추가</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>작성자 이름 <span style="font-weight:400;color:var(--ink-soft);">(선택, 평가표 하단에 표기됩니다)</span></label>
+            <input type="text" id="in-writer" placeholder="예) 박희본">
+          </div>
+          <button class="btn-primary" id="btn-reg-start">평가표 작성 시작</button>
+          <div class="hint">선택한 협력사/공사팀은 다음 접속 시에도 목록에 남아 재사용할 수 있습니다. 같은 협력사/공사팀으로 다시 접속하면 우리 팀이 이전에 제출한 평가표를 바로 확인할 수 있습니다.</div>
+        </div>
+        <div id="pane-admin" style="display:none;">
+          <div class="field">
+            <label>관리자 비밀번호</label>
+            <input type="password" id="in-admin-pw" placeholder="••••">
+          </div>
+          <button class="btn-primary" id="btn-admin-login">관리자 로그인</button>
+          <div id="admin-err" class="err" style="display:none;">비밀번호가 올바르지 않습니다.</div>
+          <div class="hint">관리자는 전체 제출 내역 조회, 검색, 인쇄, 삭제 및 협력사/공사팀 목록을 관리할 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function fillSelect(sel, list, placeholder){
+  sel.innerHTML = `<option value="">${placeholder}</option>` + list.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+}
+
+function bindLogin(){
+  const tabReg = document.getElementById('tab-reg');
+  const tabAdmin = document.getElementById('tab-admin');
+  const paneReg = document.getElementById('pane-reg');
+  const paneAdmin = document.getElementById('pane-admin');
+  tabReg.onclick = ()=>{ tabReg.classList.add('active'); tabAdmin.classList.remove('active'); paneReg.style.display='block'; paneAdmin.style.display='none'; };
+  tabAdmin.onclick = ()=>{ tabAdmin.classList.add('active'); tabReg.classList.remove('active'); paneAdmin.style.display='block'; paneReg.style.display='none'; };
+
+  const companySel = document.getElementById('in-company');
+  const teamSel = document.getElementById('in-team');
+  fillSelect(companySel, state.companies, "선택하세요");
+  fillSelect(teamSel, state.teams, "선택하세요");
+
+  document.getElementById('add-company').onclick = async ()=>{
+    const v = document.getElementById('new-company').value.trim();
+    if(!v) return;
+    if(!state.companies.includes(v)){ state.companies.push(v); await saveCompaniesTeams(); }
+    fillSelect(companySel, state.companies, "선택하세요");
+    companySel.value = v;
+    document.getElementById('new-company').value = "";
+  };
+  document.getElementById('add-team').onclick = async ()=>{
+    const v = document.getElementById('new-team').value.trim();
+    if(!v) return;
+    if(!state.teams.includes(v)){ state.teams.push(v); await saveCompaniesTeams(); }
+    fillSelect(teamSel, state.teams, "선택하세요");
+    teamSel.value = v;
+    document.getElementById('new-team').value = "";
+  };
+
+  document.getElementById('btn-reg-start').onclick = async ()=>{
+    const company = companySel.value;
+    const team = teamSel.value;
+    const writerName = document.getElementById('in-writer').value.trim();
+    if(!company || !team){ toast("협력사와 공사팀을 선택해 주세요."); return; }
+    state.role = "registrar";
+    state.registrar = {company, team, writerName};
+    state.editingRecordId = null;
+    state.formTab = "new";
+
+    const draft = await loadDraft(state.registrar);
+    if(draft && (draft.workName || draft.address || draft.workContent)){
+      const when = draft.updatedAt || draft.createdAt;
+      const ok = confirm(`이어서 작성하던 임시저장 내용이 있습니다.\\n(마지막 저장: ${new Date(when).toLocaleString('ko-KR')})\\n\\n이어서 작성하시겠습니까?\\n[취소]를 누르면 새로 작성합니다.`);
+      state.currentForm = ok ? draft : blankForm({company, team, writerName});
+      if(!ok) await clearDraft(state.registrar);
+    }else{
+      state.currentForm = blankForm({company, team, writerName});
+    }
+    state.view = "form";
+    render();
+  };
+
+  document.getElementById('btn-admin-login').onclick = async ()=>{
+    const pw = document.getElementById('in-admin-pw').value;
+    if(pw === ADMIN_PASSWORD){
+      state.role = "admin";
+      await loadRecords();
+      state.view = "admin";
+      render();
+    }else{
+      document.getElementById('admin-err').style.display = 'block';
+    }
+  };
+  document.getElementById('in-admin-pw').addEventListener('keydown', e=>{
+    if(e.key === 'Enter') document.getElementById('btn-admin-login').click();
+  });
+}
+
+/* ============================================================
+   SHELL (topbar + viewport)
+   ============================================================ */
+function shellHTML(){
+  const who = state.role === 'admin'
+    ? `관리자 모드`
+    : `${esc(state.registrar.company)} / ${esc(state.registrar.team)}`;
+  return `
+  <div class="topbar no-print">
+    <div class="brand"><span class="dot"></span>TBM·위험성평가 관리 시스템<span class="sub">KT-TELECOP / 강북·강원</span></div>
+    <div class="who">
+      <span>${who}</span>
+      <button class="link" id="btn-logout">로그아웃</button>
+    </div>
+  </div>
+  <main><div class="shell" id="viewport"></div></main>
+  <footer class="appfoot no-print">작업 전 TBM 및 위험성평가표 &middot; 내부 안전관리용 &middot; 데이터는 팀 공용 저장소에 안전하게 보관됩니다.</footer>
+  `;
+}
+
+function bindShell(){
+  document.getElementById('btn-logout').onclick = ()=>{
+    state.role = null; state.registrar = null; state.currentForm = null; state.view = "login";
+    render();
+  };
+}
+
+/* ============================================================
+   FORM (create / edit / read-only detail)
+   ============================================================ */
+function renderFormInto(root, opts){
+  opts = opts || {};
+  const readOnly = !!opts.readOnly;
+  const fromAdmin = !!opts.fromAdmin;
+  const isRegistrar = state.role === 'registrar' && !fromAdmin;
+
+  // registrar-only tab bar to switch between "new" and "mine"
+  const tabBar = isRegistrar ? `
+    <div class="formtabs no-print">
+      <button class="ftab ${state.formTab==='new'?'active':''}" id="ftab-new">새 평가표 작성</button>
+      <button class="ftab ${state.formTab==='mine'?'active':''}" id="ftab-mine">제출 내역 (우리 팀)</button>
+    </div>` : '';
+
+  root.innerHTML = `${tabBar}<div id="form-body"></div>`;
+  if(isRegistrar){
+    document.getElementById('ftab-new').onclick = async ()=>{
+      state.formTab = 'new';
+      state.editingRecordId = null;
+      if(!state.currentForm || state.currentForm._loadedFromRecord){
+        state.currentForm = blankForm(state.registrar);
+      }
+      render();
+    };
+    document.getElementById('ftab-mine').onclick = async ()=>{
+      state.formTab = 'mine';
+      await loadRecords();
+      render();
+    };
+  }
+
+  if(isRegistrar && state.formTab === 'mine'){
+    renderMineListInto(document.getElementById('form-body'));
+    return;
+  }
+
+  const f = state.currentForm;
+  const editable = !readOnly;
+  const heading = readOnly ? "제출 내역 상세" : (state.editingRecordId ? "평가표 수정" : "작업 전 TBM 및 위험성평가표 작성");
+  const sub = readOnly ? ("ID " + f.id) : (state.editingRecordId ? "수정 후 [수정 저장]을 눌러야 반영됩니다" : "작성 후 하단의 [제출·저장]을 눌러야 저장됩니다");
+
+  document.getElementById('form-body').innerHTML = `
+    <div class="actionbar no-print">
+      <div class="title">${heading}<span class="mono">${sub}</span></div>
+      <div class="btns">
+        ${fromAdmin ? `<button class="btn" id="btn-back-admin">← 목록으로</button>` : ``}
+        ${(isRegistrar && state.formTab==='new') ? `<button class="btn" id="btn-back-mine">← 우리 팀 내역</button>` : ``}
+        <button class="btn" id="btn-print">🖨 인쇄 / PDF</button>
+        ${editable ? `<button class="btn solid" id="btn-submit">${state.editingRecordId ? '수정 저장' : '제출 · 저장'}</button>` : ``}
+      </div>
+    </div>
+    <div class="sheet" id="sheet"></div>
+  `;
+  document.getElementById('btn-print').onclick = ()=>window.print();
+  if(fromAdmin){
+    document.getElementById('btn-back-admin').onclick = ()=>{ state.view='admin'; render(); };
+  }
+  const backMine = document.getElementById('btn-back-mine');
+  if(backMine) backMine.onclick = async ()=>{ state.formTab='mine'; await loadRecords(); render(); };
+  if(editable){
+    document.getElementById('btn-submit').onclick = ()=>submitForm();
+  }
+  renderSheet(document.getElementById('sheet'), f, readOnly, editable && state.formTab==='new' && !state.editingRecordId);
+}
+
+/* ---------- registrar: "our team" submission list ---------- */
+function renderMineListInto(root){
+  const reg = state.registrar;
+  const mine = state.records.filter(r => r.company === reg.company && r.team === reg.team);
+  root.innerHTML = `
+    <div class="panel">
+      <h3>${esc(reg.company)} / ${esc(reg.team)} — 제출 내역 <span class="mono" style="font-weight:500;color:var(--ink-soft);font-size:11.5px;">총 ${mine.length}건</span></h3>
+      ${mine.length === 0 ? `<div class="empty">아직 제출한 평가표가 없습니다. [새 평가표 작성] 탭에서 작성해 주세요.</div>` : `
+      <table class="list">
+        <tr><th>작업일자</th><th>지사</th><th>작업명</th><th>상태</th><th>제출/수정 시각</th><th></th></tr>
+        ${mine.map(r=>{
+          const hasBad = (r.risks||[]).some(x=>x.status==='bad');
+          return `
+          <tr>
+            <td class="mono">${esc(r.workDate)}</td>
+            <td>${esc(r.branch||'-')}</td>
+            <td>${esc(r.workName||'-')}</td>
+            <td><span class="badge ${hasBad?'bad':'ok'}">${hasBad?'불량 확인 필요':'양호'}</span></td>
+            <td class="mono" style="font-size:11.5px;">${new Date(r.updatedAt||r.createdAt).toLocaleString('ko-KR')}</td>
+            <td>
+              <div class="rowbtns">
+                <button class="btn ghost" data-mview="${r.id}">보기</button>
+                <button class="btn" data-medit="${r.id}">수정</button>
+                <button class="btn" data-mcopy="${r.id}">복사</button>
+                <button class="btn danger" data-mdel="${r.id}">삭제</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join("")}
+      </table>`}
+    </div>
+  `;
+  if(mine.length === 0) return;
+
+  root.querySelectorAll('[data-mview]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const rec = mine.find(r=>r.id===btn.getAttribute('data-mview'));
+    state.currentForm = {...rec, _loadedFromRecord:true};
+    state.editingRecordId = null;
+    const vp = document.getElementById('viewport');
+    renderFormInto(vp, {readOnly:true});
+  }));
+  root.querySelectorAll('[data-medit]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const rec = mine.find(r=>r.id===btn.getAttribute('data-medit'));
+    state.currentForm = JSON.parse(JSON.stringify(rec));
+    state.currentForm._loadedFromRecord = true;
+    state.editingRecordId = rec.id;
+    state.formTab = 'new';
+    render();
+  }));
+  root.querySelectorAll('[data-mcopy]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const rec = mine.find(r=>r.id===btn.getAttribute('data-mcopy'));
+    const copy = blankForm(state.registrar);
+    copy.branch = rec.branch;
+    copy.workType = rec.workType;
+    copy.address = rec.address;
+    copy.tbm = {...rec.tbm};
+    copy.ladder = {...rec.ladder};
+    state.currentForm = copy;
+    state.editingRecordId = null;
+    state.formTab = 'new';
+    render();
+    toast("이전 평가표를 복사했습니다. 작업일자·작업명 등을 확인해 주세요.");
+  }));
+  root.querySelectorAll('[data-mdel]').forEach(btn=>btn.addEventListener('click', async ()=>{
+    if(!confirm("이 평가표를 삭제하시겠습니까? 되돌릴 수 없습니다.")) return;
+    await sDelete("record:" + btn.getAttribute('data-mdel'), true);
+    await loadRecords();
+    render();
+    toast("삭제되었습니다.");
+  }));
+}
+
+function sheetOuterHTML(f, dis, participantsInner){
+  return `
+    <h2 class="formtitle">작업 전 TBM 및 위험성 평가표</h2>
+    <div class="formtitle-sub">※ 해당항목에 √ 표기 요망</div>
+
+    <table class="grid">
+      <colgroup>
+        <col style="width:12%"><col style="width:20%"><col style="width:10%"><col style="width:18%"><col style="width:10%"><col style="width:30%">
+      </colgroup>
+      <tr>
+        <th>협력사/공사팀</th><td colspan="1">${esc(f.company)} / ${esc(f.team)}</td>
+        <th class="req">관할 지사</th><td>${selectHTML('branch', BRANCHES, f.branch, dis)}</td>
+        <th>작업일자</th><td><input type="date" data-field="workDate" value="${esc(f.workDate)}" ${dis}></td>
+      </tr>
+      <tr>
+        <th class="req">작업명(상호명)</th><td colspan="2"><input type="text" data-field="workName" value="${esc(f.workName)}" placeholder="예) OO빌딩 CCTV 증설" ${dis}></td>
+        <th>주소</th><td colspan="2"><input type="text" data-field="address" value="${esc(f.address)}" placeholder="예) 서울특별시 강북구 미아동 123-45 OO빌딩 5층" ${dis}></td>
+      </tr>
+      <tr>
+        <th>작업내용</th><td colspan="3"><input type="text" data-field="workContent" value="${esc(f.workContent)}" ${dis}></td>
+        <th>작업 유형</th><td><input type="text" data-field="workType" value="${esc(f.workType)}" placeholder="신설/이설/철거 등" ${dis}></td>
+      </tr>
+    </table>
+
+    <span class="section-label">TBM 확인 사항 (공통사항)</span>
+    <div class="checkbox-panel">
+      <div class="ck-grid2">
+        ${TBM_COMMON.map(x=>`
+          <label class="ck-row"><input type="checkbox" data-tbm="${x.k}" ${f.tbm[x.k]?'checked':''} ${dis}> ${esc(x.label)}</label>
+        `).join("")}
+      </div>
+    </div>
+
+    <span class="section-label">A형 사다리 발판 높이별 안전수칙 (하위 높이 안전대책 누적 적용)</span>
+    <table class="ladder">
+      <tr><th style="width:150px;">사다리 높이</th><th>안전대책</th></tr>
+      ${LADDER_LEVELS.map(x=>`
+        <tr>
+          <td class="hcell"><label class="ck-row" style="padding:0;"><input type="checkbox" data-ladder="${x.k}" ${f.ladder[x.k]?'checked':''} ${dis}> ${esc(x.label)}</label></td>
+          <td>${esc(x.measure).replace(/\\n/g,'<br>')}</td>
+        </tr>
+      `).join("")}
+    </table>
+
+    <table class="risk">
+      <tr><th style="width:76px;">위험요인</th><th>안전대책</th><th style="width:126px;">확인</th><th style="width:190px;">추가 조치 사항 (불량 시 작성)</th></tr>
+      ${f.risks.map((r,i)=>`
+        <tr>
+          ${r._firstOfCat !== false && isFirstOfCat(f.risks,i) ? `<td class="cat ${r.cls}" rowspan="${catCount(f.risks,r.cat)}">${esc(r.cat)}</td>` : ``}
+          <td class="item">${esc(r.item)}</td>
+          <td class="status">
+            <div class="status-opts">
+              <label class="status-opt good"><input type="radio" name="risk-${i}" value="good" ${r.status==='good'?'checked':''} data-risk-status="${i}" ${dis}> 양호</label>
+              <label class="status-opt bad"><input type="radio" name="risk-${i}" value="bad" ${r.status==='bad'?'checked':''} data-risk-status="${i}" ${dis}> 불량</label>
+            </div>
+            <div class="status-opts" style="margin-top:3px;">
+              <label class="status-opt"><input type="radio" name="risk-${i}" value="na" ${r.status==='na'?'checked':''} data-risk-status="${i}" ${dis}> 해당없음</label>
+            </div>
+          </td>
+          <td class="action"><input type="text" data-risk-action="${i}" value="${esc(r.action)}" placeholder="불량 시 조치내용" ${dis}></td>
+        </tr>
+      `).join("")}
+      <tr>
+        <td class="cat cat-extra">추가</td>
+        <td colspan="3"><textarea class="wide" data-field="extraRisk" placeholder="체크항목 외 추가 위험요인 및 대책을 입력하세요" ${dis}>${esc(f.extraRisk)}</textarea></td>
+      </tr>
+    </table>
+
+    <span class="section-label">참석자 확인 (서명)</span>
+    <div class="participants" id="participants">${participantsInner || ''}</div>
+
+    <span class="section-label">비고</span>
+    <div class="checkbox-panel" style="border-radius:0 6px 6px 6px;">
+      <textarea class="wide" data-field="remarks" style="min-height:40px;" ${dis}>${esc(f.remarks)}</textarea>
+    </div>
+
+    <div class="meta-footer">
+      <span>${f.writerName ? esc(f.writerName)+' /' : ''}${esc(f.branch||'-')}/${esc(f.team)}</span>
+      <span>${f.updatedAt ? '수정' : '작성'}일시 ${new Date(f.updatedAt||f.createdAt).toLocaleString('ko-KR')}</span>
+    </div>
+  `;
+}
+
+function renderSheet(el, f, readOnly, autosave){
+  const dis = readOnly ? 'disabled' : '';
+  el.innerHTML = sheetOuterHTML(f, dis, '');
+  bindGridInputs(el, f, readOnly, autosave);
+  renderParticipants(el.querySelector('#participants'), f, readOnly, autosave);
+}
+
+/* static (non-interactive) participants markup used for print-all and zip export */
+function participantsStaticHTML(f){
+  return (f.participants||[]).map(p=>`
+    <div class="prow">
+      <div class="pname"><label class="mini">이름</label><div style="padding:5px 2px;font-size:12.8px;min-height:18px;">${esc(p.name)}</div></div>
+      <div class="psig sigcell"><div><label class="mini">서명</label>${p.sig ? `<img class="sigpad" src="${p.sig}" style="object-fit:contain;">` : `<div class="sigpad"></div>`}</div></div>
+      <div class="rm"></div>
+    </div>
+  `).join("");
+}
+
+function selectHTML(field, list, value, dis){
+  return `<select data-field="${field}" ${dis}>` +
+    `<option value="">선택</option>` +
+    list.map(v=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(v)}</option>`).join("") +
+    `</select>`;
+}
+
+function isFirstOfCat(risks, i){
+  return i===0 || risks[i-1].cat !== risks[i].cat;
+}
+function catCount(risks, cat){
+  return risks.filter(r=>r.cat===cat).length;
+}
+
+function bindGridInputs(el, f, readOnly, autosave){
+  if(readOnly) return;
+  const touch = ()=>{ if(autosave) debouncedSaveDraft(); };
+  el.querySelectorAll('[data-field]').forEach(node=>{
+    const field = node.getAttribute('data-field');
+    node.addEventListener('input', ()=>{ f[field] = node.value; touch(); });
+    node.addEventListener('change', ()=>{ f[field] = node.value; touch(); });
+  });
+  el.querySelectorAll('[data-tbm]').forEach(node=>{
+    node.addEventListener('change', ()=>{ f.tbm[node.getAttribute('data-tbm')] = node.checked; touch(); });
+  });
+  el.querySelectorAll('[data-ladder]').forEach(node=>{
+    node.addEventListener('change', ()=>{
+      const k = node.getAttribute('data-ladder');
+      const order = LADDER_LEVELS.map(x=>x.k);
+      const idx = order.indexOf(k);
+      if(node.checked){
+        // cumulative: checking a level implies all lower levels also apply
+        for(let j=0;j<=idx;j++) f.ladder[order[j]] = true;
+      }else{
+        // unchecking a level is inconsistent with any higher level still being checked
+        // (higher levels cumulatively depend on this one), so uncheck this and all higher levels
+        for(let j=idx;j<order.length;j++) f.ladder[order[j]] = false;
+      }
+      renderSheet(el, f, readOnly, autosave);
+      touch();
+    });
+  });
+  el.querySelectorAll('[data-risk-status]').forEach(node=>{
+    node.addEventListener('change', ()=>{
+      const i = +node.getAttribute('data-risk-status');
+      f.risks[i].status = node.value;
+      touch();
+    });
+  });
+  el.querySelectorAll('[data-risk-action]').forEach(node=>{
+    node.addEventListener('input', ()=>{
+      const i = +node.getAttribute('data-risk-action');
+      f.risks[i].action = node.value;
+      touch();
+    });
+  });
+}
+
+/* ---------- participants with signature pads ---------- */
+function renderParticipants(el, f, readOnly, autosave){
+  el.innerHTML = f.participants.map((p,i)=>`
+    <div class="prow" data-p="${i}">
+      <div class="pname">
+        <label class="mini">이름</label>
+        <input type="text" value="${esc(p.name)}" data-pname="${i}" placeholder="참석자 이름" ${readOnly?'disabled':''}>
+      </div>
+      <div class="psig sigcell">
+        <div>
+          <label class="mini">서명</label>
+          <canvas class="sigpad" width="150" height="44" data-psig="${i}"></canvas>
+        </div>
+        ${readOnly ? `` : `<button type="button" class="sig-clear" data-pclear="${i}">지우기</button>`}
+      </div>
+      <div class="rm">${readOnly ? `` : `<button type="button" data-premove="${i}" title="삭제">×</button>`}</div>
+    </div>
+  `).join("") + (readOnly ? `` : `<div class="addp"><button class="btn" id="btn-add-participant">+ 참석자 추가</button></div>`);
+
+  const touch = ()=>{ if(autosave) debouncedSaveDraft(); };
+  f.participants.forEach((p,i)=>{
+    const canvas = el.querySelector(`canvas[data-psig="${i}"]`);
+    setupSigPad(canvas, p, readOnly, touch);
+    if(readOnly){
+      // nothing else
+    }else{
+      el.querySelector(`input[data-pname="${i}"]`).addEventListener('input', e=>{ p.name = e.target.value; touch(); });
+      const clearBtn = el.querySelector(`button[data-pclear="${i}"]`);
+      if(clearBtn) clearBtn.addEventListener('click', ()=>{
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        p.sig = "";
+        touch();
+      });
+      const rmBtn = el.querySelector(`button[data-premove="${i}"]`);
+      if(rmBtn) rmBtn.addEventListener('click', ()=>{
+        f.participants.splice(i,1);
+        renderParticipants(el, f, readOnly, autosave);
+        touch();
+      });
+    }
+  });
+  if(!readOnly){
+    const addBtn = el.querySelector('#btn-add-participant');
+    if(addBtn) addBtn.addEventListener('click', ()=>{
+      f.participants.push({name:"", sig:""});
+      renderParticipants(el, f, readOnly, autosave);
+      touch();
+    });
+  }
+}
+
+function setupSigPad(canvas, participant, readOnly, touch){
+  const ctx = canvas.getContext('2d');
+  ctx.lineWidth = 1.8;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#1b2a2e';
+  if(participant.sig){
+    const img = new Image();
+    img.onload = ()=>ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    img.src = participant.sig;
+  }
+  if(readOnly) return;
+  let drawing = false, last = null;
+  function pos(e){
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return {x: cx * canvas.width/rect.width, y: cy * canvas.height/rect.height};
+  }
+  function start(e){ e.preventDefault(); drawing = true; last = pos(e); }
+  function move(e){
+    if(!drawing) return;
+    e.preventDefault();
+    const p = pos(e);
+    ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+    last = p;
+  }
+  function end(){
+    if(!drawing) return;
+    drawing = false;
+    participant.sig = canvas.toDataURL('image/png');
+    if(touch) touch();
+  }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+}
+
+async function submitForm(){
+  const f = state.currentForm;
+  if(!f.branch){ toast("관할 지사를 선택해 주세요."); return; }
+  if(!f.workName){ toast("작업명(상호명)을 입력해 주세요."); return; }
+  const isEdit = !!state.editingRecordId;
+  if(isEdit) f.updatedAt = new Date().toISOString();
+  delete f._loadedFromRecord;
+  const key = "record:" + f.id;
+  const ok = await sSet(key, JSON.stringify(f), true);
+  if(ok){
+    toast(isEdit ? "수정 내용이 저장되었습니다." : "평가표가 저장되었습니다.");
+    if(state.role === 'registrar' && !isEdit) await clearDraft(state.registrar);
+    state.editingRecordId = null;
+    if(state.role === 'registrar'){
+      await loadRecords();
+      state.formTab = 'mine';
+      state.currentForm = blankForm(state.registrar);
+    }else{
+      // admin edit: return to admin list
+      await loadRecords();
+      state.view = 'admin';
+    }
+    render();
+  }else{
+    toast("저장에 실패했습니다. 다시 시도해 주세요.");
+  }
+}
+
+/* ============================================================
+   ADMIN DASHBOARD
+   ============================================================ */
+async function renderAdminInto(root){
+  root.innerHTML = `
+    <div class="actionbar no-print">
+      <div class="title">관리자 대시보드 <span class="mono">등록된 위험성평가표 전체 관리</span></div>
+      <div class="btns">
+        <button class="btn" id="btn-print-all">🖨 전체 인쇄/PDF</button>
+        <button class="btn" id="btn-zip">🗜 ZIP 압축 다운로드</button>
+        <button class="btn" id="btn-export">⬇ CSV 내보내기</button>
+        <button class="btn" id="btn-refresh">↻ 새로고침</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="panel">
+      <h3>제출 내역</h3>
+      <div class="filters">
+        <input type="text" id="f-q" placeholder="협력사·공사팀·작업명 검색">
+        <select id="f-branch"><option value="">전체 지사</option>${BRANCHES.map(b=>`<option value="${b}">${b}</option>`).join("")}</select>
+        <input type="date" id="f-from">
+        <input type="date" id="f-to">
+      </div>
+      <div class="hint" style="margin:-2px 0 10px;">전체 인쇄·ZIP·CSV는 위 검색/필터 조건이 적용된 건에만 적용됩니다.</div>
+      <div id="list-wrap"></div>
+    </div>
+    <div class="panel">
+      <h3>협력사 / 공사팀 목록 관리</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--ink-soft);">협력사(공사업체)</label>
+          <div class="addrow" style="margin:8px 0;"><input type="text" id="admin-new-company" placeholder="새 협력사 추가"><button id="admin-add-company">추가</button></div>
+          <div class="taglist" id="company-tags"></div>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--ink-soft);">공사팀</label>
+          <div class="addrow" style="margin:8px 0;"><input type="text" id="admin-new-team" placeholder="새 공사팀 추가"><button id="admin-add-team">추가</button></div>
+          <div class="taglist" id="team-tags"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('btn-refresh').onclick = async ()=>{ await loadRecords(); renderAdminList(); renderStats(); };
+  document.getElementById('btn-export').onclick = exportCSV;
+  document.getElementById('btn-print-all').onclick = printAllRecords;
+  document.getElementById('btn-zip').onclick = exportZip;
+  ['f-q','f-branch','f-from','f-to'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', ()=>{
+      state.adminFilter = {
+        q: document.getElementById('f-q').value.trim().toLowerCase(),
+        branch: document.getElementById('f-branch').value,
+        from: document.getElementById('f-from').value,
+        to: document.getElementById('f-to').value,
+      };
+      renderAdminList();
+    });
+  });
+  renderStats();
+  renderAdminList();
+  renderTags();
+
+  document.getElementById('admin-add-company').onclick = async ()=>{
+    const inp = document.getElementById('admin-new-company');
+    const v = inp.value.trim();
+    if(v && !state.companies.includes(v)){ state.companies.push(v); await saveCompaniesTeams(); inp.value=''; renderTags(); }
+  };
+  document.getElementById('admin-add-team').onclick = async ()=>{
+    const inp = document.getElementById('admin-new-team');
+    const v = inp.value.trim();
+    if(v && !state.teams.includes(v)){ state.teams.push(v); await saveCompaniesTeams(); inp.value=''; renderTags(); }
+  };
+}
+
+function getFilteredRecords(){
+  const {q, branch, from, to} = state.adminFilter;
+  return state.records.filter(r=>{
+    if(branch && r.branch !== branch) return false;
+    if(from && r.workDate < from) return false;
+    if(to && r.workDate > to) return false;
+    if(q){
+      const hay = `${r.company} ${r.team} ${r.workName} ${r.address}`.toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function csvContentFor(rows){
+  const header = ["작업일자","관할지사","협력사","공사팀","작성자","작업명","주소","작업내용","작업유형","불량항목수","참석자","제출시각"];
+  const lines = [header.join(",")];
+  rows.forEach(r=>{
+    const badCount = (r.risks||[]).filter(x=>x.status==='bad').length;
+    const names = (r.participants||[]).map(p=>p.name).filter(Boolean).join(" / ");
+    const cells = [r.workDate, r.branch, r.company, r.team, r.writerName||"", r.workName, r.address, r.workContent, r.workType, badCount, names, new Date(r.createdAt).toLocaleString('ko-KR')];
+    lines.push(cells.map(c => `"${String(c==null?"":c).replace(/"/g,'""')}"`).join(","));
+  });
+  return "\uFEFF" + lines.join("\r\n");
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function safeFileName(s){
+  return String(s||'').replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_').slice(0,80);
+}
+
+function exportCSV(){
+  const rows = getFilteredRecords();
+  if(rows.length === 0){ toast("내보낼 내역이 없습니다."); return; }
+  const blob = new Blob([csvContentFor(rows)], {type:"text/csv;charset=utf-8;"});
+  downloadBlob(blob, `TBM_위험성평가표_${todayStr()}.csv`);
+}
+
+/* ---------- print all filtered records at once ---------- */
+function printAllRecords(){
+  const rows = getFilteredRecords();
+  if(rows.length === 0){ toast("인쇄할 내역이 없습니다."); return; }
+  document.querySelectorAll('#print-all-root').forEach(n=>n.remove());
+  const container = document.createElement('div');
+  container.id = 'print-all-root';
+  rows.forEach(r=>{
+    const div = document.createElement('div');
+    div.className = 'sheet print-page';
+    div.innerHTML = sheetOuterHTML(r, 'disabled', participantsStaticHTML(r));
+    container.appendChild(div);
+  });
+  document.body.appendChild(container);
+  document.body.classList.add('printing-all');
+  toast(`${rows.length}건을 인쇄 준비했습니다.`);
+  setTimeout(()=>{
+    window.print();
+    const cleanup = ()=>{
+      container.remove();
+      document.body.classList.remove('printing-all');
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    // Fallback for browsers that don't fire afterprint reliably
+    setTimeout(cleanup, 60000);
+  }, 150);
+}
+
+/* ---------- zip export: one printable HTML per record + CSV summary ---------- */
+function buildStaticDocument(f){
+  const styleTag = document.querySelector('style');
+  const styleText = styleTag ? styleTag.textContent : '';
+  const body = sheetOuterHTML(f, 'disabled', participantsStaticHTML(f));
+  return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>${esc(f.workName||'TBM 위험성평가표')} ${esc(f.workDate||'')}</title>
+<style>${styleText}
+body{background:#fff;padding:16px;}
+.sheet{box-shadow:none;border:1px solid #c7d1cf;max-width:900px;margin:0 auto;}
+</style>
+</head>
+<body>
+<div class="sheet">${body}</div>
+</body>
+</html>`;
+}
+
+async function exportZip(){
+  if(typeof JSZip === 'undefined'){
+    toast("압축 기능을 불러오지 못했습니다. 인터넷 연결 상태를 확인해 주세요.");
+    return;
+  }
+  const rows = getFilteredRecords();
+  if(rows.length === 0){ toast("압축할 내역이 없습니다."); return; }
+  toast(`${rows.length}건을 압축하는 중입니다...`);
+  const zip = new JSZip();
+  const usedNames = {};
+  rows.forEach(r=>{
+    let base = safeFileName(`${r.workDate}_${r.branch||''}_${r.workName||'평가표'}`);
+    if(usedNames[base] != null){ usedNames[base]++; base += '_' + usedNames[base]; } else { usedNames[base] = 0; }
+    zip.file(`${base}.html`, buildStaticDocument(r));
+  });
+  zip.file(`전체_제출내역_${todayStr()}.csv`, csvContentFor(rows));
+  const blob = await zip.generateAsync({type:"blob"});
+  downloadBlob(blob, `TBM_위험성평가표_모음_${todayStr()}.zip`);
+  toast("압축파일 다운로드가 시작되었습니다.");
+}
+
+function renderStats(){
+  const el = document.getElementById('stats');
+  const total = state.records.length;
+  const today = todayStr();
+  const todayCount = state.records.filter(r=>r.workDate===today).length;
+  const badCount = state.records.filter(r=> (r.risks||[]).some(x=>x.status==='bad')).length;
+  const branchCount = new Set(state.records.map(r=>r.branch).filter(Boolean)).size;
+  el.innerHTML = `
+    <div class="stat"><div class="n">${total}</div><div class="l">전체 제출 건수</div></div>
+    <div class="stat"><div class="n">${todayCount}</div><div class="l">오늘 작업일자 건수</div></div>
+    <div class="stat"><div class="n">${badCount}</div><div class="l">불량 항목 포함 건수</div></div>
+    <div class="stat"><div class="n">${branchCount}</div><div class="l">참여 지사 수</div></div>
+  `;
+}
+
+function renderAdminList(){
+  const wrap = document.getElementById('list-wrap');
+  let rows = getFilteredRecords();
+  if(rows.length === 0){
+    wrap.innerHTML = `<div class="empty">조건에 맞는 제출 내역이 없습니다.</div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <table class="list">
+      <tr><th>작업일자</th><th>지사</th><th>협력사/공사팀</th><th>작업명</th><th>상태</th><th>제출시각</th><th></th></tr>
+      ${rows.map(r=>{
+        const hasBad = (r.risks||[]).some(x=>x.status==='bad');
+        return `
+        <tr>
+          <td class="mono">${esc(r.workDate)}</td>
+          <td>${esc(r.branch||'-')}</td>
+          <td>${esc(r.company)} / ${esc(r.team)}</td>
+          <td>${esc(r.workName||'-')}</td>
+          <td><span class="badge ${hasBad?'bad':'ok'}">${hasBad?'불량 확인 필요':'양호'}</span></td>
+          <td class="mono" style="font-size:11.5px;">${new Date(r.createdAt).toLocaleString('ko-KR')}</td>
+          <td>
+            <div class="rowbtns">
+              <button class="btn ghost" data-view="${r.id}">보기</button>
+              <button class="btn" data-edit="${r.id}">수정</button>
+              <button class="btn danger" data-del="${r.id}">삭제</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join("")}
+    </table>
+  `;
+  wrap.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const rec = state.records.find(r=>r.id === btn.getAttribute('data-edit'));
+      state.currentForm = JSON.parse(JSON.stringify(rec));
+      state.editingRecordId = rec.id;
+      state.view = "form";
+      renderFormInto(document.getElementById('viewport'), {fromAdmin:true});
+    });
+  });
+  wrap.querySelectorAll('[data-view]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const rec = state.records.find(r=>r.id === btn.getAttribute('data-view'));
+      state.currentForm = rec;
+      state.view = "form";
+      renderFormInto(document.getElementById('viewport'), {readOnly:true, fromAdmin:true});
+    });
+  });
+  wrap.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.getAttribute('data-del');
+      if(!confirm("이 평가표를 삭제하시겠습니까? 되돌릴 수 없습니다.")) return;
+      await sDelete("record:" + id, true);
+      state.records = state.records.filter(r=>r.id !== id);
+      renderAdminList();
+      renderStats();
+      toast("삭제되었습니다.");
+    });
+  });
+}
+
+function renderTags(){
+  const cEl = document.getElementById('company-tags');
+  const tEl = document.getElementById('team-tags');
+  if(!cEl) return;
+  cEl.innerHTML = state.companies.map(c=>`<span class="tag">${esc(c)}<button data-rmc="${esc(c)}">×</button></span>`).join("") || `<span style="font-size:12px;color:var(--ink-soft);">등록된 협력사가 없습니다.</span>`;
+  tEl.innerHTML = state.teams.map(t=>`<span class="tag">${esc(t)}<button data-rmt="${esc(t)}">×</button></span>`).join("") || `<span style="font-size:12px;color:var(--ink-soft);">등록된 공사팀이 없습니다.</span>`;
+  cEl.querySelectorAll('[data-rmc]').forEach(b=>b.addEventListener('click', async ()=>{
+    state.companies = state.companies.filter(c=>c!==b.getAttribute('data-rmc'));
+    await saveCompaniesTeams(); renderTags();
+  }));
+  tEl.querySelectorAll('[data-rmt]').forEach(b=>b.addEventListener('click', async ()=>{
+    state.teams = state.teams.filter(t=>t!==b.getAttribute('data-rmt'));
+    await saveCompaniesTeams(); renderTags();
+  }));
+}
+
+boot();
+</script>
+</body>
+</html>
