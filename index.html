@@ -299,9 +299,9 @@
        늦게 뜨는 원인이 될 수 있으므로, :has()는 아래 3줄에서만 CSS 변수 값을
        바꾸는 데 사용하고 실제 속성 규칙은 전부 그 변수를 참조하게 한다. */
     .sheet {
-      --fs-title: 16px; --mb-title: 3px;
+      --fs-title: 18px; --mb-title: 4px;
       --mb-section: 5px;
-      --fs-grid: 11px; --pad-grid: 4px 8px;
+      --fs-grid: 12px; --pad-grid: 5px 9px;
       --fs-label: 10px; --pad-label: 3px 8px;
       --pad-ckpanel: 4px 8px;
       --fs-ckrow: 9.6px; --pad-ckrow: 1px 0; --lh-ckrow: 1.2;
@@ -322,7 +322,7 @@
     /* 참석자가 7명 이상(3번째 줄)이면 한 단계 압축 */
     .sheet:has(.participants .prow:nth-child(7)) {
       --mb-section: 3px;
-      --fs-grid: 8.6px; --pad-grid: 1px 4px;
+      --fs-grid: 9.2px; --pad-grid: 2px 5px;
       --fs-ladder: 8.3px; --pad-ladder: 1px 4px;
       --fs-risk: 8.4px; --pad-risk: 1px 3px;
       --mh-textarea: 32px; --fs-textarea: 8.1px; --pad-textarea: 1px 4px;
@@ -332,7 +332,7 @@
     /* 참석자가 13명 이상(5번째 줄)이면 한 단계 더 압축 */
     .sheet:has(.participants .prow:nth-child(13)) {
       --mb-section: 2px;
-      --fs-grid: 8px; --pad-grid: 0 3px;
+      --fs-grid: 8.6px; --pad-grid: 1px 4px;
       --fs-ladder: 7.8px; --pad-ladder: 0 3px;
       --fs-risk: 7.9px; --pad-risk: 1px 2px;
       --mh-textarea: 24px; --fs-textarea: 7.6px; --pad-textarea: 1px 3px;
@@ -341,9 +341,9 @@
     }
     /* 참석자가 19명 이상(7번째 줄)이면 한 단계 더 압축 */
     .sheet:has(.participants .prow:nth-child(19)) {
-      --fs-title: 12px; --mb-title: 0;
+      --fs-title: 13px; --mb-title: 0;
       --mb-section: 1px;
-      --fs-grid: 7.6px; --pad-grid: 0 2px;
+      --fs-grid: 8px; --pad-grid: 0 3px;
       --fs-ladder: 7.4px; --pad-ladder: 0 2px;
       --fs-risk: 7.4px; --pad-risk: 0 2px;
       --mh-textarea: 20px; --fs-textarea: 7.2px; --pad-textarea: 0 3px;
