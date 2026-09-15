@@ -162,11 +162,10 @@
   table.risk td{border:1px solid var(--line);padding:6px 8px;font-size:12.2px;vertical-align:middle;}
   table.risk td.cat{width:76px;font-weight:900;text-align:center;color:#fff;font-size:11.5px;position:relative;}
   table.risk td.item{line-height:1.45;}
-  table.risk td.status{width:126px;}
-  table.risk td.action{width:190px;}
-  .status-opts{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;}
-  .status-opts.mt{margin-top:3px;}
-  .status-opt{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--ink-soft);}
+  table.risk td.status{width:172px;}
+  table.risk td.action{width:180px;}
+  .status-opts{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;}
+  .status-opt{display:flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--ink-soft);white-space:nowrap;}
   .status-opt input{accent-color:var(--brand-deep);width:14px;height:14px;}
   .status-opt.good{color:var(--green);}
   .status-opt.bad{color:var(--red);}
@@ -252,8 +251,6 @@
     /* 편집용 버튼은 PDF/인쇄 결과에서 제외 */
     .prow .rm, .addp, .sig-clear,
     [data-tbm-all], [data-all-good], [data-all-na] { display: none !important; }
-    /* "해당없음"은 인쇄 결과에서는 표시하지 않음(행 자체를 접어 그만큼 공간 확보) */
-    .status-opts.mt { display: none !important; }
     /* 비어있는 입력칸의 안내 문구(placeholder)는 화면 편집용이므로 인쇄 시 숨김 */
     input::placeholder, textarea::placeholder { color: transparent !important; }
 
@@ -304,16 +301,16 @@
     .sheet {
       --fs-title: 16px; --mb-title: 3px;
       --mb-section: 5px;
-      --fs-grid: 9.6px; --pad-grid: 2px 6px;
+      --fs-grid: 10px; --pad-grid: 3px 7px;
       --fs-label: 10px; --pad-label: 3px 8px;
       --pad-ckpanel: 4px 8px;
       --fs-ckrow: 9.6px; --pad-ckrow: 1px 0; --lh-ckrow: 1.2;
       --sz-ckinput: 11px; --mt-ckinput: 2px;
       --fs-ladder: 9.2px; --pad-ladder: 3px 6px; --w-hcell: 125px;
-      --fs-risk: 8.3px; --pad-risk: 1px 4px;
-      --w-cat: 54px; --w-status: 92px; --w-action: 145px;
-      --gap-stopts: 3px; --mt-stmt: 1px;
-      --fs-stopt: 7.8px; --gap-stopt: 2px; --sz-stinput: 8px;
+      --fs-risk: 8.6px; --pad-risk: 2px 5px;
+      --w-cat: 54px; --w-status: 112px; --w-action: 135px;
+      --gap-stopts: 4px;
+      --fs-stopt: 7.6px; --gap-stopt: 2px; --sz-stinput: 8px;
       --fs-actioninput: 8.6px;
       --mh-textarea: 16px; --fs-textarea: 9.2px; --pad-textarea: 2px 5px;
       --pad-prow: 1px 4px; --gap-prow: 0;
@@ -377,7 +374,6 @@
     table.risk td.status { width: var(--w-status); }
     table.risk td.action { width: var(--w-action); }
     .status-opts { gap: var(--gap-stopts); }
-    .status-opts.mt { margin-top: var(--mt-stmt); }
     .status-opt { font-size: var(--fs-stopt); gap: var(--gap-stopt); line-height: 1.15; }
     .status-opt input { width: var(--sz-stinput); height: var(--sz-stinput); }
     table.risk td.action input { font-size: var(--fs-actioninput); line-height: 1.15; }
@@ -977,8 +973,6 @@ function sheetOuterHTML(f, dis, participantsInner){
             <div class="status-opts">
               <label class="status-opt good"><input type="radio" name="risk-${i}" value="good" ${r.status==='good'?'checked':''} data-risk-status="${i}" ${dis}> 양호</label>
               <label class="status-opt bad"><input type="radio" name="risk-${i}" value="bad" ${r.status==='bad'?'checked':''} data-risk-status="${i}" ${dis}> 불량</label>
-            </div>
-            <div class="status-opts mt">
               <label class="status-opt"><input type="radio" name="risk-${i}" value="na" ${r.status==='na'?'checked':''} data-risk-status="${i}" ${dis}> 해당없음</label>
             </div>
           </td>
