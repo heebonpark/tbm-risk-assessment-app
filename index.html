@@ -165,6 +165,7 @@
   table.risk td.status{width:126px;}
   table.risk td.action{width:190px;}
   .status-opts{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;}
+  .status-opts.mt{margin-top:3px;}
   .status-opt{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--ink-soft);}
   .status-opt input{accent-color:var(--brand-deep);width:14px;height:14px;}
   .status-opt.good{color:var(--green);}
@@ -178,19 +179,20 @@
   textarea.wide{width:100%;min-height:52px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12.8px;resize:vertical;}
   textarea.wide:focus{outline:none;border-color:var(--brand);}
 
-  .participants{border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px;}
-  .participants .prow{display:grid;grid-template-columns:1fr 210px 30px;border-top:1px solid var(--line);}
-  .participants .prow:first-child{border-top:none;}
-  .participants .pname, .participants .psig{padding:6px 8px;}
+  .participants{border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+  .participants .prow{position:relative;display:flex;flex-direction:column;gap:3px;padding:6px 8px;background:#fff;}
+  .participants .pname, .participants .psig{padding:0;}
   .participants .pname input{width:100%;border:none;font-size:12.8px;background:transparent;}
+  .participants .pname .pval{padding:2px;font-size:12.8px;min-height:16px;}
   .participants .pname input:focus{outline:none;}
   .participants label.mini{display:block;font-size:10px;color:var(--ink-soft);margin-bottom:2px;font-weight:700;}
-  canvas.sigpad{border:1px dashed var(--line);border-radius:4px;background:#fdfefe;touch-action:none;width:140px;height:44px;}
-  .sigcell{position:relative;display:flex;align-items:center;gap:10px;}
+  .sigpad{border:1px dashed var(--line);border-radius:4px;background:#fdfefe;width:100%;height:40px;display:block;}
+  canvas.sigpad{touch-action:none;}
+  .sigcell{position:relative;display:flex;align-items:center;gap:6px;}
+  .sigcell > div{flex:1;min-width:0;}
   .sig-clear{border:none;background:transparent;color:var(--ink-soft);font-size:10px;text-decoration:underline;padding:0;white-space:nowrap;flex:none;}
-  .prow .rm{display:flex;align-items:center;justify-content:center;}
-  .prow .rm button{border:none;background:transparent;color:var(--red);font-size:15px;font-weight:900;}
-  .addp{padding:8px;text-align:center;}
+  .prow .rm{position:absolute;top:2px;right:4px;border:none;background:transparent;color:var(--red);font-size:14px;font-weight:900;line-height:1;padding:0 2px;}
+  .addp{grid-column:1/-1;padding:8px;text-align:center;}
   .addp button{font-size:12px;}
 
   .meta-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
@@ -237,40 +239,126 @@
   #print-all-root .print-page:last-child{page-break-after:auto;}
 
   @media print{
-    body { 
-      background: #fff; 
-      -webkit-print-color-adjust: exact !important; 
-      print-color-adjust: exact !important; 
+    body {
+      background: #fff;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
     .no-print { display: none !important; }
     main { padding: 0; display: block; }
     .shell { max-width: none; }
     .sheet { box-shadow: none; border: none; border-radius: 0; padding: 0; }
-    
+
+    /* 편집용 버튼은 PDF/인쇄 결과에서 제외 */
+    .prow .rm, .addp, .sig-clear,
+    [data-tbm-all], [data-all-good], [data-all-na] { display: none !important; }
+
     /* 텍스트 입력 칸이 잘리지 않도록 처리 */
-    input[type=text], textarea { 
-      border: none !important; 
-      background: transparent !important; 
-      overflow: visible !important; 
+    input[type=text], textarea {
+      border: none !important;
+      background: transparent !important;
+      overflow: visible !important;
     }
     table.risk td.action input { border-bottom: 1px dashed #999 !important; }
-    
+
     /* 표가 페이지 중간에 잘리는 현상(Page break) 방지 */
     table { page-break-inside: auto; }
     tr, td, th, .section-label, .checkbox-panel { page-break-inside: avoid; }
-    
+
     /* 인쇄 시 테두리와 배경색 강제 적용 */
     table.grid th, table.grid td,
     table.ladder th, table.ladder td,
     table.risk th, table.risk td { border: 1px solid #333 !important; }
-    
-    @page { size: A4 portrait; margin: 12mm 10mm; }
+
+    /* ---- 반드시 A4 한 장에 맞도록 높이/폰트 축소 ---- */
+    .sheet h2.formtitle { font-size: 15px; margin: 0 0 2px; }
+    .sheet .formtitle-sub { font-size: 8.5px; margin-bottom: 6px; }
+
+    table.grid { margin-bottom: 6px; }
+    table.grid th, table.grid td { padding: 3px 6px; font-size: 10px; }
+    table.grid td input[type=text], table.grid td input[type=date] { font-size: 10px; padding: 1px 2px; }
+
+    .section-label { font-size: 10px; padding: 3px 8px; }
+    .checkbox-panel { padding: 5px 8px; margin-bottom: 6px; }
+    .ck-row { padding: 1px 0; font-size: 10px; line-height: 1.3; }
+    .ck-row input { width: 11px; height: 11px; margin-top: 2px; }
+
+    table.ladder { margin-bottom: 6px; }
+    table.ladder th { padding: 3px 6px; font-size: 10px; }
+    table.ladder td { padding: 3px 6px; font-size: 9.8px; }
+    table.ladder td.hcell { width: 120px; }
+
+    table.risk { margin-bottom: 6px; }
+    table.risk th { padding: 3px 5px; font-size: 9.6px; }
+    table.risk td { padding: 2px 5px; font-size: 9.6px; }
+    table.risk td.cat { width: 56px; font-size: 9px; }
+    table.risk td.status { width: 96px; }
+    table.risk td.action { width: 150px; }
+    .status-opts { gap: 5px; }
+    .status-opt { font-size: 9px; }
+    .status-opt input { width: 10px; height: 10px; }
+    table.risk td.action input { font-size: 9.5px; }
+
+    textarea.wide { min-height: 20px; font-size: 9.6px; padding: 3px 6px; }
+
+    .participants { margin-bottom: 6px; }
+    .participants .prow { padding: 3px 6px; gap: 2px; }
+    .participants label.mini { font-size: 8px; margin-bottom: 1px; }
+    .participants .pname input, .participants .pname .pval { font-size: 10px; padding: 1px; min-height: 12px; }
+    .sigpad { height: 26px; }
+
+    .meta-footer { margin-top: 2px; font-size: 8.5px; }
+
+    /* ---- 내용이 넘칠 때 JS(fitSheetsToOnePage)가 단계적으로 붙이는 추가 압축 클래스 ---- */
+    .sheet.print-tight h2.formtitle { font-size: 14px; margin: 0 0 1px; }
+    .sheet.print-tight .formtitle-sub { font-size: 8px; margin-bottom: 4px; }
+    .sheet.print-tight table.grid, .sheet.print-tight .checkbox-panel,
+    .sheet.print-tight table.ladder, .sheet.print-tight table.risk,
+    .sheet.print-tight .participants { margin-bottom: 4px; }
+    .sheet.print-tight table.grid th, .sheet.print-tight table.grid td { padding: 2px 5px; font-size: 9.3px; }
+    .sheet.print-tight .section-label { font-size: 9.3px; padding: 2px 7px; }
+    .sheet.print-tight .checkbox-panel { padding: 3px 7px; }
+    .sheet.print-tight .ck-row { padding: 0; font-size: 9.3px; line-height: 1.2; }
+    .sheet.print-tight table.ladder th, .sheet.print-tight table.ladder td { padding: 2px 5px; font-size: 9px; }
+    .sheet.print-tight table.risk th, .sheet.print-tight table.risk td { padding: 1px 4px; font-size: 8.8px; }
+    .sheet.print-tight .status-opts.mt { margin-top: 2px; }
+    .sheet.print-tight .status-opt { font-size: 8.5px; }
+    .sheet.print-tight .status-opt input { width: 9px; height: 9px; }
+    .sheet.print-tight textarea.wide { min-height: 14px; font-size: 8.8px; padding: 2px 5px; }
+    .sheet.print-tight .participants .prow { padding: 2px 5px; gap: 1px; }
+    .sheet.print-tight .participants label.mini { font-size: 7.3px; }
+    .sheet.print-tight .sigpad { height: 20px; }
+    .sheet.print-tight .meta-footer { font-size: 8px; }
+
+    .sheet.print-tighter h2.formtitle { font-size: 13px; margin: 0; }
+    .sheet.print-tighter .formtitle-sub { font-size: 7.5px; margin-bottom: 3px; }
+    .sheet.print-tighter table.grid, .sheet.print-tighter .checkbox-panel,
+    .sheet.print-tighter table.ladder, .sheet.print-tighter table.risk,
+    .sheet.print-tighter .participants { margin-bottom: 3px; }
+    .sheet.print-tighter table.grid th, .sheet.print-tighter table.grid td { padding: 1px 4px; font-size: 8.6px; }
+    .sheet.print-tighter .section-label { font-size: 8.6px; padding: 1px 6px; }
+    .sheet.print-tighter .checkbox-panel { padding: 2px 6px; }
+    .sheet.print-tighter .ck-row { padding: 0; font-size: 8.6px; line-height: 1.1; }
+    .sheet.print-tighter table.ladder th, .sheet.print-tighter table.ladder td { padding: 1px 4px; font-size: 8.3px; }
+    .sheet.print-tighter table.risk th, .sheet.print-tighter table.risk td { padding: 0 3px; font-size: 8.1px; }
+    .sheet.print-tighter .status-opts { gap: 3px; }
+    .sheet.print-tighter .status-opts.mt { margin-top: 0; }
+    .sheet.print-tighter .status-opt { font-size: 7.6px; gap: 2px; }
+    .sheet.print-tighter .status-opt input { width: 7px; height: 7px; }
+    .sheet.print-tighter textarea.wide { min-height: 10px; font-size: 8.1px; padding: 1px 4px; }
+    .sheet.print-tighter .participants .prow { padding: 1px 4px 0; gap: 0; }
+    .sheet.print-tighter .participants label.mini { font-size: 6.5px; margin-bottom: 0; }
+    .sheet.print-tighter .participants .pname input, .sheet.print-tighter .participants .pname .pval { font-size: 8.5px; padding: 0; min-height: 10px; }
+    .sheet.print-tighter .sigpad { height: 12px; }
+    .sheet.print-tighter .meta-footer { font-size: 7.5px; }
+
+    @page { size: A4 portrait; margin: 10mm 9mm; }
     body.printing-all #app { display: none !important; }
     body.printing-all #print-all-root { display: block !important; }
   }
   @media (max-width:720px){
     table.risk td.action, table.risk th:nth-child(4){display:none;}
-    .participants .prow{grid-template-columns:1fr 130px 26px;}
+    .participants{grid-template-columns:repeat(2,1fr);}
 
     /* stack the top info table into label/value cards instead of a cramped 6-col grid */
     table.grid colgroup{display:none;}
@@ -387,6 +475,29 @@ function toast(msg){
   clearTimeout(toast._t);
   toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
 }
+
+/* ---------------- 인쇄/PDF 시 한 페이지 강제 맞춤 ----------------
+   참석자 수나 입력 텍스트 길이에 따라 내용이 A4 한 장을 넘길 수 있으므로,
+   인쇄 직전 실제 렌더링 높이를 측정해 필요한 만큼 더 압축된 CSS 단계를 적용한다.
+   (CSS zoom/transform은 크롬의 PDF 인쇄 페이지 나눔 계산에 반영되지 않아
+   실제 폭/글자 크기를 줄이는 클래스를 단계적으로 적용하는 방식을 사용한다) */
+const PRINT_PAGE_MM = { height: 297, marginTop: 10, marginBottom: 10 };
+function fitSheetsToOnePage(){
+  const mmToPx = 96 / 25.4;
+  const pageH = (PRINT_PAGE_MM.height - PRINT_PAGE_MM.marginTop - PRINT_PAGE_MM.marginBottom) * mmToPx;
+  document.querySelectorAll('.sheet').forEach(sheet=>{
+    sheet.classList.remove('print-tight', 'print-tighter');
+    if(sheet.scrollHeight <= pageH) return;
+    sheet.classList.add('print-tight');
+    if(sheet.scrollHeight <= pageH) return;
+    sheet.classList.add('print-tighter');
+  });
+}
+function resetSheetPrintTiers(){
+  document.querySelectorAll('.sheet').forEach(sheet=>{ sheet.classList.remove('print-tight', 'print-tighter'); });
+}
+window.addEventListener('beforeprint', fitSheetsToOnePage);
+window.addEventListener('afterprint', resetSheetPrintTiers);
 
 /* ---------------- app state ---------------- */
 const state = {
@@ -842,7 +953,7 @@ function sheetOuterHTML(f, dis, participantsInner){
               <label class="status-opt good"><input type="radio" name="risk-${i}" value="good" ${r.status==='good'?'checked':''} data-risk-status="${i}" ${dis}> 양호</label>
               <label class="status-opt bad"><input type="radio" name="risk-${i}" value="bad" ${r.status==='bad'?'checked':''} data-risk-status="${i}" ${dis}> 불량</label>
             </div>
-            <div class="status-opts" style="margin-top:3px;">
+            <div class="status-opts mt">
               <label class="status-opt"><input type="radio" name="risk-${i}" value="na" ${r.status==='na'?'checked':''} data-risk-status="${i}" ${dis}> 해당없음</label>
             </div>
           </td>
@@ -881,9 +992,8 @@ function renderSheet(el, f, readOnly, autosave){
 function participantsStaticHTML(f){
   return (f.participants||[]).map(p=>`
     <div class="prow">
-      <div class="pname"><label class="mini">이름</label><div style="padding:5px 2px;font-size:12.8px;min-height:18px;">${esc(p.name)}</div></div>
-      <div class="psig sigcell"><div><label class="mini">서명</label>${p.sig ? `<img class="sigpad" src="${p.sig}" style="object-fit:contain;">` : `<div class="sigpad"></div>`}</div></div>
-      <div class="rm"></div>
+      <div class="pname"><label class="mini">이름</label><div class="pval">${esc(p.name)}</div></div>
+      <div class="psig"><label class="mini">서명</label>${p.sig ? `<img class="sigpad" src="${p.sig}" style="object-fit:contain;">` : `<div class="sigpad"></div>`}</div>
     </div>
   `).join("");
 }
@@ -968,6 +1078,7 @@ function bindGridInputs(el, f, readOnly, autosave){
 function renderParticipants(el, f, readOnly, autosave){
   el.innerHTML = f.participants.map((p,i)=>`
     <div class="prow" data-p="${i}">
+      ${readOnly ? `` : `<button type="button" class="rm" data-premove="${i}" title="삭제">×</button>`}
       <div class="pname">
         <label class="mini">이름</label>
         <input type="text" value="${esc(p.name)}" data-pname="${i}" placeholder="참석자 이름" ${readOnly?'disabled':''}>
@@ -979,7 +1090,6 @@ function renderParticipants(el, f, readOnly, autosave){
         </div>
         ${readOnly ? `` : `<button type="button" class="sig-clear" data-pclear="${i}">지우기</button>`}
       </div>
-      <div class="rm">${readOnly ? `` : `<button type="button" data-premove="${i}" title="삭제">×</button>`}</div>
     </div>
   `).join("") + (readOnly ? `` : `<div class="addp"><button class="btn" id="btn-add-participant">+ 참석자 추가</button></div>`);
 
