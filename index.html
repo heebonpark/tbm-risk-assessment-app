@@ -275,60 +275,102 @@
     table.risk th, table.risk td,
     .participants, .participants .prow,
     .checkbox-panel, textarea.wide { border: 1px solid #333 !important; }
+    /* 둥근 모서리는 작은 인쇄 크기에서 안티앨리어싱으로 흐릿하게 보이므로 직각으로 통일 */
+    .checkbox-panel, .participants, textarea.wide { border-radius: 0 !important; }
 
-    /* ---- 반드시 A4 한 장에 맞도록 높이/폰트 축소 (기본값 자체를 압축된 값으로 적용) ----
+    /* ---- 반드시 A4 한 장에 맞도록 높이/폰트 조절 (기본값 자체를 압축된 값으로 적용) ----
        JS의 beforeprint 이벤트로 스타일을 바꾸는 방식은 Safari에서는 인쇄 페이지 나눔이
        이벤트 발생 전에 이미 계산되어 반영되지 않는 경우가 있어(참석자 수와 무관하게
        항상 2페이지로 넘어감), 브라우저 타이밍에 의존하지 않는 순수 CSS 값으로
-       기본값 자체를 여유 있게 압축한다. 또한 Safari의 "머리말 및 꼬리말"(URL/날짜/
-       페이지 번호) 인쇄 옵션이 켜져 있으면 여백 안에 추가로 공간을 차지하므로,
-       그 여유분까지 감안해 기본값을 더 타이트하게 잡는다. */
-    .sheet h2.formtitle { font-size: 13px; margin: 0; }
-    .sheet .formtitle-sub { font-size: 7.5px; margin-bottom: 3px; }
+       기본값 자체를 압축한다. 다만 너무 작게 줄이면 한 장 안에서 하단 공백이 커
+       보이므로, Safari의 "머리말 및 꼬리말" 옵션이 켜져 있어도 안전할 만큼의
+       여백만 남기고 나머지는 페이지를 보기 좋게 채우도록 크기를 잡는다. */
+    .sheet h2.formtitle { font-size: 16px; margin: 0 0 3px; }
+    .sheet .formtitle-sub { font-size: 9px; margin-bottom: 6px; }
 
-    table.grid, .checkbox-panel, table.ladder, table.risk, .participants { margin-bottom: 3px; }
-    table.grid th, table.grid td { padding: 1px 4px; font-size: 8.6px; }
-    table.grid td input[type=text], table.grid td input[type=date] { font-size: 8.6px; padding: 0 2px; }
+    table.grid, .checkbox-panel, table.ladder, table.risk, .participants { margin-bottom: 5px; }
+    table.grid th, table.grid td { padding: 2px 6px; font-size: 9.6px; }
+    table.grid td input[type=text], table.grid td input[type=date] { font-size: 9.6px; padding: 1px 2px; }
 
-    .section-label { font-size: 8.6px; padding: 1px 6px; }
-    .checkbox-panel { padding: 2px 6px; }
-    .ck-row { padding: 0; font-size: 8.6px; line-height: 1.1; }
-    .ck-row input { width: 10px; height: 10px; margin-top: 1px; }
+    .section-label { font-size: 10px; padding: 3px 8px; }
+    .checkbox-panel { padding: 4px 8px; }
+    .ck-row { padding: 1px 0; font-size: 9.6px; line-height: 1.2; }
+    .ck-row input { width: 11px; height: 11px; margin-top: 2px; }
 
-    table.ladder th, table.ladder td { padding: 1px 4px; font-size: 8.3px; }
-    table.ladder td.hcell { width: 110px; }
+    table.ladder th, table.ladder td { padding: 2px 5px; font-size: 9.2px; }
+    table.ladder td.hcell { width: 125px; }
 
-    table.risk th, table.risk td { padding: 0 3px; font-size: 8.1px; }
-    table.risk td.cat { width: 52px; font-size: 8.4px; }
-    table.risk td.status { width: 90px; }
-    table.risk td.action { width: 140px; }
+    /* 위험성 평가표는 13행이라 1px만 늘어도 전체 높이에 크게 영향을 주므로 타이트하게 유지 */
+    table.risk th, table.risk td { padding: 0 3px; font-size: 8.3px; }
+    table.risk td.cat { width: 54px; font-size: 8.3px; }
+    table.risk td.status { width: 92px; }
+    table.risk td.action { width: 145px; }
     .status-opts { gap: 3px; }
-    .status-opts.mt { margin-top: 0; }
-    .status-opt { font-size: 7.6px; gap: 2px; }
-    .status-opt input { width: 7px; height: 7px; }
-    table.risk td.action input { font-size: 8.4px; }
+    .status-opts.mt { margin-top: 1px; }
+    .status-opt { font-size: 7.8px; gap: 2px; }
+    .status-opt input { width: 8px; height: 8px; }
+    table.risk td.action input { font-size: 8.6px; }
 
-    textarea.wide { min-height: 10px; font-size: 8.1px; padding: 1px 4px; }
+    textarea.wide { min-height: 16px; font-size: 9.2px; padding: 2px 5px; }
 
-    .participants .prow { padding: 1px 4px 0; gap: 0; }
-    .participants label.mini { font-size: 6.5px; margin-bottom: 0; }
-    .participants .pname input, .participants .pname .pval { font-size: 8.5px; padding: 0; min-height: 10px; }
-    .sigpad { height: 12px; }
+    /* 참석자 카드도 인원 수만큼 곱해지므로 타이트하게 유지 */
+    .participants .prow { padding: 1px 4px; gap: 0; }
+    .participants label.mini { font-size: 6.8px; margin-bottom: 0; }
+    .participants .pname input, .participants .pname .pval { font-size: 9px; padding: 0; min-height: 10.5px; }
+    .sigpad { height: 15px; }
 
-    .meta-footer { margin-top: 1px; font-size: 7.5px; }
+    .meta-footer { margin-top: 3px; font-size: 8.5px; }
 
     /* ---- 참석자가 16명 이상(6번째 줄 이상)이면 순수 CSS(:has)로 한 단계 더 압축 ----
        JS beforeprint 타이밍에 의존하지 않아 Safari에서도 항상 적용된다. */
-    .sheet:has(.participants .prow:nth-child(16)) table.grid th,
-    .sheet:has(.participants .prow:nth-child(16)) table.grid td { padding: 0 3px; font-size: 8px; }
-    .sheet:has(.participants .prow:nth-child(16)) table.ladder th,
-    .sheet:has(.participants .prow:nth-child(16)) table.ladder td { padding: 0 3px; font-size: 7.8px; }
-    .sheet:has(.participants .prow:nth-child(16)) table.risk th,
-    .sheet:has(.participants .prow:nth-child(16)) table.risk td { padding: 0 2px; font-size: 7.6px; }
-    .sheet:has(.participants .prow:nth-child(16)) .participants label.mini { font-size: 6px; }
-    .sheet:has(.participants .prow:nth-child(16)) .participants .pname input,
-    .sheet:has(.participants .prow:nth-child(16)) .participants .pname .pval { font-size: 7.8px; }
-    .sheet:has(.participants .prow:nth-child(16)) .sigpad { height: 9px; }
+    .sheet:has(.participants .prow:nth-child(7)) table.grid, .sheet:has(.participants .prow:nth-child(7)) .checkbox-panel,
+    .sheet:has(.participants .prow:nth-child(7)) table.ladder, .sheet:has(.participants .prow:nth-child(7)) table.risk,
+    .sheet:has(.participants .prow:nth-child(7)) .participants { margin-bottom: 3px; }
+    .sheet:has(.participants .prow:nth-child(7)) table.grid th,
+    .sheet:has(.participants .prow:nth-child(7)) table.grid td { padding: 1px 4px; font-size: 8.6px; }
+    .sheet:has(.participants .prow:nth-child(7)) table.ladder th,
+    .sheet:has(.participants .prow:nth-child(7)) table.ladder td { padding: 1px 4px; font-size: 8.3px; }
+    .sheet:has(.participants .prow:nth-child(7)) table.risk th,
+    .sheet:has(.participants .prow:nth-child(7)) table.risk td { padding: 0 3px; font-size: 8.1px; }
+    .sheet:has(.participants .prow:nth-child(7)) textarea.wide { min-height: 10px; font-size: 8.1px; padding: 1px 4px; }
+    .sheet:has(.participants .prow:nth-child(7)) .participants .prow { padding: 1px 4px 0; gap: 0; }
+    .sheet:has(.participants .prow:nth-child(7)) .participants label.mini { font-size: 6.5px; margin-bottom: 0; }
+    .sheet:has(.participants .prow:nth-child(7)) .participants .pname input,
+    .sheet:has(.participants .prow:nth-child(7)) .participants .pname .pval { font-size: 8.5px; }
+    .sheet:has(.participants .prow:nth-child(7)) .sigpad { height: 13px; }
+
+    /* ---- 참석자가 16명 이상(6번째 줄 이상)이면 한 단계 더 압축 ---- */
+    .sheet:has(.participants .prow:nth-child(13)) table.grid, .sheet:has(.participants .prow:nth-child(13)) .checkbox-panel,
+    .sheet:has(.participants .prow:nth-child(13)) table.ladder, .sheet:has(.participants .prow:nth-child(13)) table.risk,
+    .sheet:has(.participants .prow:nth-child(13)) .participants { margin-bottom: 2px; }
+    .sheet:has(.participants .prow:nth-child(13)) table.grid th,
+    .sheet:has(.participants .prow:nth-child(13)) table.grid td { padding: 0 3px; font-size: 8px; }
+    .sheet:has(.participants .prow:nth-child(13)) table.ladder th,
+    .sheet:has(.participants .prow:nth-child(13)) table.ladder td { padding: 0 3px; font-size: 7.8px; }
+    .sheet:has(.participants .prow:nth-child(13)) table.risk th,
+    .sheet:has(.participants .prow:nth-child(13)) table.risk td { padding: 0 2px; font-size: 7.6px; }
+    .sheet:has(.participants .prow:nth-child(13)) textarea.wide { min-height: 8px; font-size: 7.6px; padding: 1px 3px; }
+    .sheet:has(.participants .prow:nth-child(13)) .participants label.mini { font-size: 6px; }
+    .sheet:has(.participants .prow:nth-child(13)) .participants .pname input,
+    .sheet:has(.participants .prow:nth-child(13)) .participants .pname .pval { font-size: 7.8px; }
+    .sheet:has(.participants .prow:nth-child(13)) .sigpad { height: 9px; }
+
+    /* ---- 참석자가 19명 이상(7번째 줄 이상)이면 한 단계 더 압축 ---- */
+    .sheet:has(.participants .prow:nth-child(19)) table.grid, .sheet:has(.participants .prow:nth-child(19)) .checkbox-panel,
+    .sheet:has(.participants .prow:nth-child(19)) table.ladder, .sheet:has(.participants .prow:nth-child(19)) table.risk,
+    .sheet:has(.participants .prow:nth-child(19)) .participants { margin-bottom: 1px; }
+    .sheet:has(.participants .prow:nth-child(19)) h2.formtitle { font-size: 12px; margin: 0; }
+    .sheet:has(.participants .prow:nth-child(19)) table.grid th,
+    .sheet:has(.participants .prow:nth-child(19)) table.grid td { padding: 0 2px; font-size: 7.6px; }
+    .sheet:has(.participants .prow:nth-child(19)) table.ladder th,
+    .sheet:has(.participants .prow:nth-child(19)) table.ladder td { padding: 0 2px; font-size: 7.4px; }
+    .sheet:has(.participants .prow:nth-child(19)) table.risk th,
+    .sheet:has(.participants .prow:nth-child(19)) table.risk td { padding: 0 2px; font-size: 7.2px; }
+    .sheet:has(.participants .prow:nth-child(19)) textarea.wide { min-height: 6px; font-size: 7.2px; padding: 0 3px; }
+    .sheet:has(.participants .prow:nth-child(19)) .participants label.mini { font-size: 5.8px; }
+    .sheet:has(.participants .prow:nth-child(19)) .participants .pname input,
+    .sheet:has(.participants .prow:nth-child(19)) .participants .pname .pval { font-size: 7.4px; }
+    .sheet:has(.participants .prow:nth-child(19)) .sigpad { height: 8px; }
 
     @page { size: A4 portrait; margin: 8mm 8mm; }
     body.printing-all #app { display: none !important; }
