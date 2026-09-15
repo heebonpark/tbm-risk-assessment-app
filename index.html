@@ -319,7 +319,7 @@
       --pad-prow: 1px 4px; --gap-prow: 0;
       --fs-plabel: 6.8px; --mb-plabel: 0;
       --fs-pname: 9px; --mh-pname: 10.5px;
-      --h-sigpad: 15px;
+      --h-sigpad: 26px;
       --mt-footer: 3px; --fs-footer: 8.5px;
     }
     /* 참석자가 7명 이상(3번째 줄)이면 한 단계 압축 */
@@ -330,7 +330,7 @@
       --fs-risk: 8.1px; --pad-risk: 0 3px;
       --mh-textarea: 10px; --fs-textarea: 8.1px; --pad-textarea: 1px 4px;
       --pad-prow: 1px 4px 0; --fs-plabel: 6.5px; --fs-pname: 8.5px;
-      --h-sigpad: 13px;
+      --h-sigpad: 22px;
     }
     /* 참석자가 13명 이상(5번째 줄)이면 한 단계 더 압축 */
     .sheet:has(.participants .prow:nth-child(13)) {
@@ -340,7 +340,7 @@
       --fs-risk: 7.6px; --pad-risk: 0 2px;
       --mh-textarea: 8px; --fs-textarea: 7.6px; --pad-textarea: 1px 3px;
       --fs-plabel: 6px; --fs-pname: 7.8px;
-      --h-sigpad: 9px;
+      --h-sigpad: 16px;
     }
     /* 참석자가 19명 이상(7번째 줄)이면 한 단계 더 압축 */
     .sheet:has(.participants .prow:nth-child(19)) {
@@ -351,7 +351,7 @@
       --fs-risk: 7.2px; --pad-risk: 0 2px;
       --mh-textarea: 6px; --fs-textarea: 7.2px; --pad-textarea: 0 3px;
       --fs-plabel: 5.8px; --fs-pname: 7.4px;
-      --h-sigpad: 8px;
+      --h-sigpad: 14px;
     }
 
     /* line-height는 브라우저마다(특히 Safari가 크롬보다 크게 잡음) 기본값 차이가 커서,
@@ -386,9 +386,14 @@
 
     /* 참석자 카드도 인원 수만큼 곱해지므로 타이트하게 유지 */
     .participants .prow { padding: var(--pad-prow); gap: var(--gap-prow); }
+    /* "이름" 줄을 라벨+값 한 줄(이름 : 홍길동)로 붙여서 그만큼 아낀 높이를 서명란에 배분 */
+    .participants .pname { display: flex; align-items: baseline; gap: 3px; }
+    .participants .pname label.mini { flex: none; margin-bottom: 0 !important; }
+    .participants .pname label.mini::after { content: ":"; }
     .participants label.mini { font-size: var(--fs-plabel); margin-bottom: var(--mb-plabel); line-height: 1.15; }
-    .participants .pname input, .participants .pname .pval { font-size: var(--fs-pname); padding: 0; min-height: var(--mh-pname); line-height: 1.15; }
-    .sigpad { height: var(--h-sigpad); }
+    .participants .pname input, .participants .pname .pval { font-size: var(--fs-pname); padding: 0; min-height: 0; line-height: 1.15; flex: 1; }
+    /* 서명은 이미 그려진 상태로 인쇄되므로 점선 테두리는 불필요 */
+    .sigpad { height: var(--h-sigpad); border: none !important; background: transparent !important; }
 
     .meta-footer { margin-top: var(--mt-footer); font-size: var(--fs-footer); line-height: 1.15; }
 
