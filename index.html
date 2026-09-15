@@ -481,10 +481,12 @@ function toast(msg){
    인쇄 직전 실제 렌더링 높이를 측정해 필요한 만큼 더 압축된 CSS 단계를 적용한다.
    (CSS zoom/transform은 크롬의 PDF 인쇄 페이지 나눔 계산에 반영되지 않아
    실제 폭/글자 크기를 줄이는 클래스를 단계적으로 적용하는 방식을 사용한다) */
-const PRINT_PAGE_MM = { height: 297, marginTop: 10, marginBottom: 10 };
+const PRINT_PAGE_MM = { height: 297, marginTop: 10, marginBottom: 10, safety: 14 };
 function fitSheetsToOnePage(){
   const mmToPx = 96 / 25.4;
-  const pageH = (PRINT_PAGE_MM.height - PRINT_PAGE_MM.marginTop - PRINT_PAGE_MM.marginBottom) * mmToPx;
+  // safety: Safari 등 일부 브라우저는 "머리말 및 꼬리말"(URL/날짜/페이지 번호)을
+  // 인쇄 여백 안에 추가로 그려 실제 사용 가능한 높이가 줄어들 수 있으므로 여유를 둔다.
+  const pageH = (PRINT_PAGE_MM.height - PRINT_PAGE_MM.marginTop - PRINT_PAGE_MM.marginBottom - PRINT_PAGE_MM.safety) * mmToPx;
   document.querySelectorAll('.sheet').forEach(sheet=>{
     sheet.classList.remove('print-tight', 'print-tighter');
     if(sheet.scrollHeight <= pageH) return;
