@@ -248,10 +248,6 @@
     main { padding: 0; display: block; }
     .shell { max-width: none; }
     .sheet { box-shadow: none; border: none; border-radius: 0; padding: 0; }
-    /* Safari(WebKit)는 한글 폰트의 기본 line-height를 크롬보다 훨씨 크게 잡아
-       같은 폰트 크기에도 실제 인쇄 높이가 더 커진다. 브라우저 간 차이를 줄이기
-       위해 모든 텍스트에 명시적인 line-height를 고정한다. */
-    .sheet, .sheet * { line-height: 1.15; }
 
     /* 편집용 버튼은 PDF/인쇄 결과에서 제외 */
     .prow .rm, .addp, .sig-clear,
@@ -344,41 +340,44 @@
       --h-sigpad: 8px;
     }
 
-    .sheet h2.formtitle { font-size: var(--fs-title); margin: 0 0 var(--mb-title); }
-    .sheet .formtitle-sub { font-size: var(--fs-sub); margin-bottom: var(--mb-sub); }
+    /* line-height는 브라우저마다(특히 Safari가 크롬보다 크게 잡음) 기본값 차이가 커서,
+       텍스트가 있는 규칙마다 직접 지정한다. `.sheet *` 같은 전체 선택자는 모든
+       자손 엘리먼트를 순회해야 해서 인쇄 시 스타일 재계산이 느려지는 원인이 되므로 쓰지 않는다. */
+    .sheet h2.formtitle { font-size: var(--fs-title); margin: 0 0 var(--mb-title); line-height: 1.15; }
+    .sheet .formtitle-sub { font-size: var(--fs-sub); margin-bottom: var(--mb-sub); line-height: 1.15; }
 
     table.grid, .checkbox-panel, table.ladder, table.risk, .participants { margin-bottom: var(--mb-section); }
-    table.grid th, table.grid td { padding: var(--pad-grid); font-size: var(--fs-grid); }
-    table.grid td input[type=text], table.grid td input[type=date] { font-size: var(--fs-grid); padding: 1px 2px; }
+    table.grid th, table.grid td { padding: var(--pad-grid); font-size: var(--fs-grid); line-height: 1.15; }
+    table.grid td input[type=text], table.grid td input[type=date] { font-size: var(--fs-grid); padding: 1px 2px; line-height: 1.15; }
 
-    .section-label { font-size: var(--fs-label); padding: var(--pad-label); }
+    .section-label { font-size: var(--fs-label); padding: var(--pad-label); line-height: 1.15; }
     .checkbox-panel { padding: var(--pad-ckpanel); }
     .ck-row { padding: var(--pad-ckrow); font-size: var(--fs-ckrow); line-height: var(--lh-ckrow); }
     .ck-row input { width: var(--sz-ckinput); height: var(--sz-ckinput); margin-top: var(--mt-ckinput); }
 
-    table.ladder th, table.ladder td { padding: var(--pad-ladder); font-size: var(--fs-ladder); }
+    table.ladder th, table.ladder td { padding: var(--pad-ladder); font-size: var(--fs-ladder); line-height: 1.15; }
     table.ladder td.hcell { width: var(--w-hcell); }
 
     /* 위험성 평가표는 13행이라 1px만 늘어도 전체 높이에 크게 영향을 주므로 타이트하게 유지 */
-    table.risk th, table.risk td { padding: var(--pad-risk); font-size: var(--fs-risk); }
+    table.risk th, table.risk td { padding: var(--pad-risk); font-size: var(--fs-risk); line-height: 1.15; }
     table.risk td.cat { width: var(--w-cat); font-size: var(--fs-risk); }
     table.risk td.status { width: var(--w-status); }
     table.risk td.action { width: var(--w-action); }
     .status-opts { gap: var(--gap-stopts); }
     .status-opts.mt { margin-top: var(--mt-stmt); }
-    .status-opt { font-size: var(--fs-stopt); gap: var(--gap-stopt); }
+    .status-opt { font-size: var(--fs-stopt); gap: var(--gap-stopt); line-height: 1.15; }
     .status-opt input { width: var(--sz-stinput); height: var(--sz-stinput); }
-    table.risk td.action input { font-size: var(--fs-actioninput); }
+    table.risk td.action input { font-size: var(--fs-actioninput); line-height: 1.15; }
 
-    textarea.wide { min-height: var(--mh-textarea); font-size: var(--fs-textarea); padding: var(--pad-textarea); }
+    textarea.wide { min-height: var(--mh-textarea); font-size: var(--fs-textarea); padding: var(--pad-textarea); line-height: 1.15; }
 
     /* 참석자 카드도 인원 수만큼 곱해지므로 타이트하게 유지 */
     .participants .prow { padding: var(--pad-prow); gap: var(--gap-prow); }
-    .participants label.mini { font-size: var(--fs-plabel); margin-bottom: var(--mb-plabel); }
-    .participants .pname input, .participants .pname .pval { font-size: var(--fs-pname); padding: 0; min-height: var(--mh-pname); }
+    .participants label.mini { font-size: var(--fs-plabel); margin-bottom: var(--mb-plabel); line-height: 1.15; }
+    .participants .pname input, .participants .pname .pval { font-size: var(--fs-pname); padding: 0; min-height: var(--mh-pname); line-height: 1.15; }
     .sigpad { height: var(--h-sigpad); }
 
-    .meta-footer { margin-top: var(--mt-footer); font-size: var(--fs-footer); }
+    .meta-footer { margin-top: var(--mt-footer); font-size: var(--fs-footer); line-height: 1.15; }
 
     @page { size: A4 portrait; margin: 8mm 8mm; }
     body.printing-all #app { display: none !important; }
@@ -476,14 +475,18 @@ async function sSet(key, value, shared){
     return true; 
   } catch(e){ console.error("storage set failed", e); return null; }
 }
-async function sList(prefix, shared){
-  try{ 
-    const keys = [];
+async function sListValues(prefix, shared){
+  // getDocs()가 이미 매칭되는 모든 문서의 데이터를 한 번에 가져오므로,
+  // 여기서 그 값을 바로 반환한다. (이전엔 key만 뽑아낸 뒤 각 key마다
+  // sGet()으로 다시 조회했는데, 레코드가 많아질수록 N번의 추가 네트워크
+  // 왕복이 생겨 관리자 로그인/새로고침이 레코드 수에 비례해 느려졌다.)
+  try{
+    const values = [];
     const qSnap = await getDocs(collection(db, "tbm_data"));
     qSnap.forEach(docSnap => {
-      if(docSnap.id.startsWith(prefix)) keys.push(docSnap.id);
+      if(docSnap.id.startsWith(prefix)) values.push(docSnap.data().value);
     });
-    return keys;
+    return values;
   }
   catch(e){ return []; }
 }
@@ -580,8 +583,7 @@ async function boot(){
 }
 
 async function loadRecords(){
-  const keys = await sList("record:", true);
-  const items = await Promise.all(keys.map(k => sGet(k, true)));
+  const items = await sListValues("record:", true);
   state.records = items.filter(Boolean).map(v=>JSON.parse(v)).sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
 }
 
