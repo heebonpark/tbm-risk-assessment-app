@@ -266,6 +266,15 @@
     table.risk td.action input { border-bottom: 1px dashed #999 !important; }
     /* 비고란은 하단 여백을 채우도록 넉넉하게(화면용 min-height:40px 인라인 스타일보다 우선) */
     .checkbox-panel textarea.wide { min-height: 90px !important; }
+    /* 관할 지사 드롭다운은 화면 입력용 UI이므로, 인쇄 시엔 선택된 지사명만 텍스트처럼 보이게 처리 */
+    table.grid td select {
+      appearance: none; -webkit-appearance: none; -moz-appearance: none;
+      border: none !important; background: transparent !important;
+      padding: 1px 2px !important;
+      color: #1b2a2e !important; opacity: 1 !important; -webkit-text-fill-color: #1b2a2e !important;
+    }
+    /* 상단 안내 문구는 화면 입력용이므로 인쇄 시 숨김 */
+    .formtitle-sub { display: none !important; }
 
     /* 표가 페이지 중간에 잘리는 현상(Page break) 방지 */
     table { page-break-inside: auto; }
@@ -294,15 +303,14 @@
        바꾸는 데 사용하고 실제 속성 규칙은 전부 그 변수를 참조하게 한다. */
     .sheet {
       --fs-title: 16px; --mb-title: 3px;
-      --fs-sub: 9px; --mb-sub: 6px;
       --mb-section: 5px;
       --fs-grid: 9.6px; --pad-grid: 2px 6px;
       --fs-label: 10px; --pad-label: 3px 8px;
       --pad-ckpanel: 4px 8px;
       --fs-ckrow: 9.6px; --pad-ckrow: 1px 0; --lh-ckrow: 1.2;
       --sz-ckinput: 11px; --mt-ckinput: 2px;
-      --fs-ladder: 9.2px; --pad-ladder: 2px 5px; --w-hcell: 125px;
-      --fs-risk: 8.3px; --pad-risk: 0 3px;
+      --fs-ladder: 9.2px; --pad-ladder: 3px 6px; --w-hcell: 125px;
+      --fs-risk: 8.3px; --pad-risk: 1px 4px;
       --w-cat: 54px; --w-status: 92px; --w-action: 145px;
       --gap-stopts: 3px; --mt-stmt: 1px;
       --fs-stopt: 7.8px; --gap-stopt: 2px; --sz-stinput: 8px;
@@ -350,7 +358,6 @@
        텍스트가 있는 규칙마다 직접 지정한다. `.sheet *` 같은 전체 선택자는 모든
        자손 엘리먼트를 순회해야 해서 인쇄 시 스타일 재계산이 느려지는 원인이 되므로 쓰지 않는다. */
     .sheet h2.formtitle { font-size: var(--fs-title); margin: 0 0 var(--mb-title); line-height: 1.15; }
-    .sheet .formtitle-sub { font-size: var(--fs-sub); margin-bottom: var(--mb-sub); line-height: 1.15; }
 
     table.grid, .checkbox-panel, table.ladder, table.risk, .participants { margin-bottom: var(--mb-section); }
     table.grid th, table.grid td { padding: var(--pad-grid); font-size: var(--fs-grid); line-height: 1.15; }
