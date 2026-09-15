@@ -248,6 +248,10 @@
     main { padding: 0; display: block; }
     .shell { max-width: none; }
     .sheet { box-shadow: none; border: none; border-radius: 0; padding: 0; }
+    /* Safari(WebKit)는 한글 폰트의 기본 line-height를 크롬보다 훨씨 크게 잡아
+       같은 폰트 크기에도 실제 인쇄 높이가 더 커진다. 브라우저 간 차이를 줄이기
+       위해 모든 텍스트에 명시적인 line-height를 고정한다. */
+    .sheet, .sheet * { line-height: 1.15; }
 
     /* 편집용 버튼은 PDF/인쇄 결과에서 제외 */
     .prow .rm, .addp, .sig-clear,
@@ -265,81 +269,68 @@
     table { page-break-inside: auto; }
     tr, td, th, .section-label, .checkbox-panel { page-break-inside: avoid; }
 
-    /* 인쇄 시 테두리와 배경색 강제 적용 */
+    /* 인쇄 시 테두리와 배경색 강제 적용 (연한 회색 대신 진한 색으로 고정해 흐리게 나오는 것 방지) */
     table.grid th, table.grid td,
     table.ladder th, table.ladder td,
     table.risk th, table.risk td,
-    .participants, .participants .prow { border: 1px solid #333 !important; }
+    .participants, .participants .prow,
+    .checkbox-panel, textarea.wide { border: 1px solid #333 !important; }
 
     /* ---- 반드시 A4 한 장에 맞도록 높이/폰트 축소 (기본값 자체를 압축된 값으로 적용) ----
        JS의 beforeprint 이벤트로 스타일을 바꾸는 방식은 Safari에서는 인쇄 페이지 나눔이
-       이벤트 발생 전에 이미 계산되어 반영되지 않는 경우가 있으므로, 브라우저에 상관없이
-       항상 적용되는 순수 CSS 값으로 기본값 자체를 압축한다. */
-    .sheet h2.formtitle { font-size: 14px; margin: 0 0 1px; }
-    .sheet .formtitle-sub { font-size: 8px; margin-bottom: 4px; }
+       이벤트 발생 전에 이미 계산되어 반영되지 않는 경우가 있어(참석자 수와 무관하게
+       항상 2페이지로 넘어감), 브라우저 타이밍에 의존하지 않는 순수 CSS 값으로
+       기본값 자체를 여유 있게 압축한다. 또한 Safari의 "머리말 및 꼬리말"(URL/날짜/
+       페이지 번호) 인쇄 옵션이 켜져 있으면 여백 안에 추가로 공간을 차지하므로,
+       그 여유분까지 감안해 기본값을 더 타이트하게 잡는다. */
+    .sheet h2.formtitle { font-size: 13px; margin: 0; }
+    .sheet .formtitle-sub { font-size: 7.5px; margin-bottom: 3px; }
 
-    table.grid, .checkbox-panel, table.ladder, table.risk, .participants { margin-bottom: 4px; }
-    table.grid th, table.grid td { padding: 2px 5px; font-size: 9.3px; }
-    table.grid td input[type=text], table.grid td input[type=date] { font-size: 9.3px; padding: 1px 2px; }
+    table.grid, .checkbox-panel, table.ladder, table.risk, .participants { margin-bottom: 3px; }
+    table.grid th, table.grid td { padding: 1px 4px; font-size: 8.6px; }
+    table.grid td input[type=text], table.grid td input[type=date] { font-size: 8.6px; padding: 0 2px; }
 
-    .section-label { font-size: 9.3px; padding: 2px 7px; }
-    .checkbox-panel { padding: 3px 7px; }
-    .ck-row { padding: 0; font-size: 9.3px; line-height: 1.2; }
-    .ck-row input { width: 11px; height: 11px; margin-top: 2px; }
+    .section-label { font-size: 8.6px; padding: 1px 6px; }
+    .checkbox-panel { padding: 2px 6px; }
+    .ck-row { padding: 0; font-size: 8.6px; line-height: 1.1; }
+    .ck-row input { width: 10px; height: 10px; margin-top: 1px; }
 
-    table.ladder th, table.ladder td { padding: 2px 5px; font-size: 9px; }
-    table.ladder td.hcell { width: 120px; }
+    table.ladder th, table.ladder td { padding: 1px 4px; font-size: 8.3px; }
+    table.ladder td.hcell { width: 110px; }
 
-    table.risk th, table.risk td { padding: 1px 4px; font-size: 8.8px; }
-    table.risk td.cat { width: 56px; font-size: 9px; }
-    table.risk td.status { width: 96px; }
-    table.risk td.action { width: 150px; }
-    .status-opts { gap: 5px; }
-    .status-opts.mt { margin-top: 2px; }
-    .status-opt { font-size: 8.5px; }
-    .status-opt input { width: 9px; height: 9px; }
-    table.risk td.action input { font-size: 9.5px; }
+    table.risk th, table.risk td { padding: 0 3px; font-size: 8.1px; }
+    table.risk td.cat { width: 52px; font-size: 8.4px; }
+    table.risk td.status { width: 90px; }
+    table.risk td.action { width: 140px; }
+    .status-opts { gap: 3px; }
+    .status-opts.mt { margin-top: 0; }
+    .status-opt { font-size: 7.6px; gap: 2px; }
+    .status-opt input { width: 7px; height: 7px; }
+    table.risk td.action input { font-size: 8.4px; }
 
-    textarea.wide { min-height: 14px; font-size: 8.8px; padding: 2px 5px; }
+    textarea.wide { min-height: 10px; font-size: 8.1px; padding: 1px 4px; }
 
-    .participants .prow { padding: 2px 5px; gap: 1px; }
-    .participants label.mini { font-size: 7.3px; margin-bottom: 1px; }
-    .participants .pname input, .participants .pname .pval { font-size: 10px; padding: 1px; min-height: 12px; }
-    .sigpad { height: 20px; }
+    .participants .prow { padding: 1px 4px 0; gap: 0; }
+    .participants label.mini { font-size: 6.5px; margin-bottom: 0; }
+    .participants .pname input, .participants .pname .pval { font-size: 8.5px; padding: 0; min-height: 10px; }
+    .sigpad { height: 12px; }
 
-    .meta-footer { margin-top: 2px; font-size: 8px; }
+    .meta-footer { margin-top: 1px; font-size: 7.5px; }
 
-    /* ---- 참석자가 10명 이상(4번째 줄)이면 순수 CSS(:has)로 한 단계 더 압축 ----
+    /* ---- 참석자가 16명 이상(6번째 줄 이상)이면 순수 CSS(:has)로 한 단계 더 압축 ----
        JS beforeprint 타이밍에 의존하지 않아 Safari에서도 항상 적용된다. */
-    .sheet:has(.participants .prow:nth-child(10)) h2.formtitle { font-size: 13px; margin: 0; }
-    .sheet:has(.participants .prow:nth-child(10)) .formtitle-sub { font-size: 7.5px; margin-bottom: 3px; }
-    .sheet:has(.participants .prow:nth-child(10)) table.grid,
-    .sheet:has(.participants .prow:nth-child(10)) .checkbox-panel,
-    .sheet:has(.participants .prow:nth-child(10)) table.ladder,
-    .sheet:has(.participants .prow:nth-child(10)) table.risk,
-    .sheet:has(.participants .prow:nth-child(10)) .participants { margin-bottom: 3px; }
-    .sheet:has(.participants .prow:nth-child(10)) table.grid th,
-    .sheet:has(.participants .prow:nth-child(10)) table.grid td { padding: 1px 4px; font-size: 8.6px; }
-    .sheet:has(.participants .prow:nth-child(10)) .section-label { font-size: 8.6px; padding: 1px 6px; }
-    .sheet:has(.participants .prow:nth-child(10)) .checkbox-panel { padding: 2px 6px; }
-    .sheet:has(.participants .prow:nth-child(10)) .ck-row { padding: 0; font-size: 8.6px; line-height: 1.1; }
-    .sheet:has(.participants .prow:nth-child(10)) table.ladder th,
-    .sheet:has(.participants .prow:nth-child(10)) table.ladder td { padding: 1px 4px; font-size: 8.3px; }
-    .sheet:has(.participants .prow:nth-child(10)) table.risk th,
-    .sheet:has(.participants .prow:nth-child(10)) table.risk td { padding: 0 3px; font-size: 8.1px; }
-    .sheet:has(.participants .prow:nth-child(10)) .status-opts { gap: 3px; }
-    .sheet:has(.participants .prow:nth-child(10)) .status-opts.mt { margin-top: 0; }
-    .sheet:has(.participants .prow:nth-child(10)) .status-opt { font-size: 7.6px; gap: 2px; }
-    .sheet:has(.participants .prow:nth-child(10)) .status-opt input { width: 7px; height: 7px; }
-    .sheet:has(.participants .prow:nth-child(10)) textarea.wide { min-height: 10px; font-size: 8.1px; padding: 1px 4px; }
-    .sheet:has(.participants .prow:nth-child(10)) .participants .prow { padding: 1px 4px 0; gap: 0; }
-    .sheet:has(.participants .prow:nth-child(10)) .participants label.mini { font-size: 6.5px; margin-bottom: 0; }
-    .sheet:has(.participants .prow:nth-child(10)) .participants .pname input,
-    .sheet:has(.participants .prow:nth-child(10)) .participants .pname .pval { font-size: 8.5px; padding: 0; min-height: 10px; }
-    .sheet:has(.participants .prow:nth-child(10)) .sigpad { height: 12px; }
-    .sheet:has(.participants .prow:nth-child(10)) .meta-footer { font-size: 7.5px; }
+    .sheet:has(.participants .prow:nth-child(16)) table.grid th,
+    .sheet:has(.participants .prow:nth-child(16)) table.grid td { padding: 0 3px; font-size: 8px; }
+    .sheet:has(.participants .prow:nth-child(16)) table.ladder th,
+    .sheet:has(.participants .prow:nth-child(16)) table.ladder td { padding: 0 3px; font-size: 7.8px; }
+    .sheet:has(.participants .prow:nth-child(16)) table.risk th,
+    .sheet:has(.participants .prow:nth-child(16)) table.risk td { padding: 0 2px; font-size: 7.6px; }
+    .sheet:has(.participants .prow:nth-child(16)) .participants label.mini { font-size: 6px; }
+    .sheet:has(.participants .prow:nth-child(16)) .participants .pname input,
+    .sheet:has(.participants .prow:nth-child(16)) .participants .pname .pval { font-size: 7.8px; }
+    .sheet:has(.participants .prow:nth-child(16)) .sigpad { height: 9px; }
 
-    @page { size: A4 portrait; margin: 10mm 9mm; }
+    @page { size: A4 portrait; margin: 8mm 8mm; }
     body.printing-all #app { display: none !important; }
     body.printing-all #print-all-root { display: block !important; }
   }
